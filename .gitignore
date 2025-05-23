@@ -11,8 +11,10 @@ yarn-error.log*
 
 # OS files
 .DS_Store
-Thumbs.db
 
 # Output
 dist/
 build/
+
+# sqlite files
+*.db
