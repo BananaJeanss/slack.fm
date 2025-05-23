@@ -27,7 +27,7 @@ module.exports = (app) => {
     const queryString = `slack_user_id=${command.user_id}&state=${state}`;
     const fullCallbackUrl = `${CALLBACK_URL}?${queryString}`;
 
-    const authUrl = `https://www.last.fm/api/auth?api_key=${LASTFM_API_KEY}&callback=${encodeURIComponent(
+    const authUrl = `https://www.last.fm/api/auth?api_key=${LASTFM_API_KEY}&cb=${encodeURIComponent(
       fullCallbackUrl
     )}`;
 

@@ -3,6 +3,7 @@ const express = require("express");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
+const db = require("./db");
 
 dotenv.config();
 
@@ -43,6 +44,18 @@ expressApp.listen(PORT, () => {
   console.log(`Express server listening on port ${PORT}`);
 });
 
+// Clear roast ratelimit database
+const cutoff = Date.now() - 3 * 86400 * 1000;
+db.run("DELETE FROM roast_usage WHERE timestamp < ?", [cutoff]);
+
+setInterval(() => {
+  const cutoff = Date.now() - 3 * 86400 * 1000;
+  db.run("DELETE FROM roast_usage WHERE timestamp < ?", [cutoff]);
+}, 3600000); // every hour
+
+
+
+// Start the Slack app
 (async () => {
   await app.start();
   app.logger.info("⚡️ Slack.fm is running!");

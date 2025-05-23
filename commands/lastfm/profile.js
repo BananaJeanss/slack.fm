@@ -10,32 +10,41 @@ const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 module.exports = (app) => {
   app.command("/profile", async ({ ack, respond, command }) => {
     await ack();
-    const input = command.text.trim().replace(/^@/, "");
+
+    let input = command.text.trim();
     let targetSlackId = command.user_id;
 
     if (input) {
-      try {
-        const users = await web.users.list();
-        const match = users.members.find(
-          (user) =>
-            user.name.toLowerCase() === input.toLowerCase() ||
-            user.profile.display_name.toLowerCase() === input.toLowerCase()
-        );
+      // If it's a Slack mention like <@U1234|username>, extract the ID
+      const mentionMatch = input.match(/^<@([UW][A-Z0-9]+)(?:\|[^>]+)?>$/);
+      if (mentionMatch) {
+        targetSlackId = mentionMatch[1];
+      } else {
+        // Fall back to username/display name lookup
+        input = input.replace(/^@/, ""); // remove leading @ if present
+        try {
+          const users = await web.users.list();
+          const match = users.members.find(
+            (user) =>
+              user.name.toLowerCase() === input.toLowerCase() ||
+              user.profile.display_name.toLowerCase() === input.toLowerCase()
+          );
 
-        if (match) {
-          targetSlackId = match.id;
-        } else {
+          if (match) {
+            targetSlackId = match.id;
+          } else {
+            return await respond({
+              response_type: "ephemeral",
+              text: "⚠️ Could not find a Slack user with that username.",
+            });
+          }
+        } catch (e) {
+          console.error("Slack API error:", e);
           return await respond({
             response_type: "ephemeral",
-            text: "⚠️ Could not find a Slack user with that username.",
+            text: ":x: Failed to look up Slack user. Try again later.",
           });
         }
-      } catch (e) {
-        console.error("Slack API error:", e);
-        return await respond({
-          response_type: "ephemeral",
-          text: ":x: Failed to look up Slack user. Try again later.",
-        });
       }
     }
 
@@ -78,9 +87,7 @@ module.exports = (app) => {
               type: "section",
               text: {
                 type: "mrkdwn",
-                text: `🎧 *${tag}'s Last.fm profile:*\n*Username:* ${
-                  profile.name
-                }\n*Scrobbles:* ${profile.playcount}\n*Registered:* ${new Date(
+                text: `🎧 *${tag}'s Last.fm profile:*\n*Username:* ${profile.name}\n*Scrobbles:* ${profile.playcount}\n*Registered:* ${new Date(
                   parseInt(profile.registered.unixtime) * 1000
                 ).toLocaleDateString()}`,
               },

@@ -9,6 +9,16 @@ db.serialize(() => {
       session_key TEXT
     )
   `);
+
+  db.run(`
+    CREATE TABLE IF NOT EXISTS roast_usage (
+      slack_user_id TEXT NOT NULL,
+      timestamp INTEGER NOT NULL
+    )
+  `);
+
+  db.run(`CREATE INDEX IF NOT EXISTS idx_roast_time ON roast_usage(slack_user_id, timestamp)`);
 });
+
 
 module.exports = db;
