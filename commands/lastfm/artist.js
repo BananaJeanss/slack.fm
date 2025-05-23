@@ -6,14 +6,14 @@ const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/album", async ({ ack, respond, command }) => {
+  app.command("/artist", async ({ ack, respond, command }) => {
     await ack();
 
     let input = command.text.trim();
     let targetSlackId = command.user_id;
+
     if (input) {
       const mention = input.match(/^<@([UW][A-Z0-9]+)(?:\|[^>]+)?>$/);
-
       if (mention) {
         targetSlackId = mention[1];
       } else {
@@ -75,52 +75,25 @@ module.exports = (app) => {
               text: `No scrobbles for *${username}*.`,
             });
           }
+
           const artist = track.artist["#text"];
-          const albumName = track.album["#text"] || "<unknown>";
 
           const infoRes = await axios.get(
-            `https://ws.audioscrobbler.com/2.0/?method=album.getInfo&artist=${encodeURIComponent(
+            `https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${encodeURIComponent(
               artist
-            )}&album=${encodeURIComponent(
-              albumName
             )}&username=${encodeURIComponent(
               username
             )}&api_key=${LASTFM_API_KEY}&format=json`
           );
-          const info = infoRes.data.album;
+          const info = infoRes.data.artist;
 
-          let releaseDate = "Unavailable";
-          try {
-            const mbRes = await axios.get(
-              `https://musicbrainz.org/ws/2/release-group`,
-              {
-                params: {
-                  query: `release:${albumName} AND artist:${artist}`,
-                  fmt: "json",
-                },
-              }
-            );
-
-            const match = mbRes.data["release-groups"]?.[0];
-            if (match?.["first-release-date"]) {
-              releaseDate = match["first-release-date"];
-            }
-          } catch (e) {
-            console.warn("MusicBrainz lookup failed:", e.message);
-          }
-
-          const listeners = info.listeners;
-          const globalPlays = info.playcount;
-          const yourPlays = info.userplaycount || 0;
-
-          const summary = info.wiki?.summary
-            ? info.wiki.summary
-                .replace(/<a href=".*">Read more on Last.fm<\/a>/, "")
-                .trim()
+          const listeners = info.stats.listeners;
+          const globalPlays = info.stats.playcount;
+          const userPlays = info.stats.userplaycount || 0;
+          const summary = info.bio?.summary
+            ? info.bio.summary.replace(/<a href=".*">Read more on Last.fm<\/a>/, "").trim()
             : "No summary available.";
-          const cover = info.image.find((i) => i.size === "extralarge")?.[
-            "#text"
-          ];
+          const image = info.image.find((i) => i.size === "extralarge")?.["#text"];
 
           let summaryText = summary;
           if (summaryText.length > 600) {
@@ -132,37 +105,26 @@ module.exports = (app) => {
               type: "section",
               text: {
                 type: "mrkdwn",
-                text: `📀 *Last played album by* <@${targetSlackId}>`,
+                text: `🎤 *Last played artist by* <@${targetSlackId}>`,
               },
             },
-
             {
               type: "section",
               text: {
                 type: "mrkdwn",
-                text: `*Album:* ${artist} – *${info.name}*`,
+                text: `*Artist:* ${info.name}`,
               },
-              accessory: cover
-                ? { type: "image", image_url: cover, alt_text: info.name }
+              accessory: image
+                ? { type: "image", image_url: image, alt_text: info.name }
                 : undefined,
             },
             { type: "divider" },
             {
               type: "section",
               fields: [
-                { type: "mrkdwn", text: `*Release date:*\n${releaseDate}` },
-                {
-                  type: "mrkdwn",
-                  text: `*Listeners:*\n${listeners} listeners`,
-                },
-                {
-                  type: "mrkdwn",
-                  text: `*Global plays:*\n${globalPlays} scrobbles`,
-                },
-                {
-                  type: "mrkdwn",
-                  text: `*<@${targetSlackId}> plays:*\n${yourPlays} scrobbles`,
-                },
+                { type: "mrkdwn", text: `*Listeners:*\n${listeners}` },
+                { type: "mrkdwn", text: `*Global plays:*\n${globalPlays}` },
+                { type: "mrkdwn", text: `*<@${targetSlackId}> plays:*\n${userPlays}` },
               ],
             },
             { type: "divider" },
@@ -184,7 +146,7 @@ module.exports = (app) => {
                     emoji: true,
                   },
                   url: info.url,
-                  action_id: "view_album_on_lastfm",
+                  action_id: "view_artist_on_lastfm",
                 },
               ],
             },
@@ -195,7 +157,7 @@ module.exports = (app) => {
           console.error("Last.fm error:", e);
           await respond({
             response_type: "ephemeral",
-            text: "⚠️ Could not fetch album info.",
+            text: "⚠️ Could not fetch artist info.",
           });
         }
       }

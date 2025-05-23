@@ -2,7 +2,7 @@ const crypto = require("crypto");
 require("dotenv").config();
 const db = require("../../db");
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
-const CALLBACK_URL = process.env.CALLBACK_URL;
+const LASTFM_CALLBACK_URL = process.env.LASTFM_CALLBACK_URL;
 
 module.exports = (app) => {
   app.command("/link", async ({ ack, respond, command }) => {
@@ -25,7 +25,7 @@ module.exports = (app) => {
 
     const state = crypto.randomBytes(16).toString("hex");
     const queryString = `slack_user_id=${command.user_id}&state=${state}`;
-    const fullCallbackUrl = `${CALLBACK_URL}?${queryString}`;
+    const fullCallbackUrl = `${LASTFM_CALLBACK_URL}?${queryString}`;
 
     const authUrl = `https://www.last.fm/api/auth?api_key=${LASTFM_API_KEY}&cb=${encodeURIComponent(
       fullCallbackUrl
