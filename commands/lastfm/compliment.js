@@ -5,7 +5,7 @@ const db = require("../../db");
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/roast", async ({ ack, respond, command }) => {
+  app.command("/compliment", async ({ ack, respond, command }) => {
     await ack();
 
     // Step 1: Parse input
@@ -87,7 +87,7 @@ module.exports = (app) => {
               ) {
                 return respond({
                   response_type: "ephemeral",
-                  text: "⚠️ Not enough recent listening data found to roast. Try again after you've scrobbled more!",
+                  text: "⚠️ Not enough recent listening data found to compliment. Try again after you've scrobbled more!",
                 });
               }
 
@@ -101,15 +101,14 @@ module.exports = (app) => {
                 .join(", ");
 
               const prompt = `
-              You're a savage, sarcastic roastmaster with a love for music — but you're here to **ruthlessly roast** someone's music taste based on their top 10 artists, albums, and tracks.
+You're a warm, thoughtful music lover with a deep appreciation for great taste — and you're here to **gently hype up** someone's music preferences based on their top 10 artists, albums, and tracks.
 
 Here’s what they’ve been listening to:
 - Top artists: ${topArtists}
 - Top albums: ${topAlbums}
 - Top tracks: ${topTracks}
 
-Deliver a hilarious, cutting roast that drags their taste through the mud. Be edgy, clever, and full of personality — but **do not include anything offensive**. No compliments, no apologies. Just roast them.
-
+Deliver a heartwarming, sincere celebration of their music taste. Be poetic, kind, and full of admiration — avoid sarcasm or critique. No negativity, no jokes at their expense. Just pure, wholesome praise.
 `;
 
               // Step 5: Send to ai.hackclub.com
@@ -120,9 +119,10 @@ Deliver a hilarious, cutting roast that drags their taste through the mud. Be ed
                 }
               );
 
-              const roast = aiResponse.data.choices?.[0]?.message?.content;
+              const compliment = aiResponse.data.choices?.[0]?.message?.content;
 
-              // Step 6: Record roast usage
+
+              // Step 6: Record compliment usage
               db.run(
                 `INSERT INTO roast_usage (slack_user_id, timestamp) VALUES (?, ?)`,
                 [command.user_id, now]
@@ -136,7 +136,7 @@ Deliver a hilarious, cutting roast that drags their taste through the mud. Be ed
                     type: "section",
                     text: {
                       type: "mrkdwn",
-                      text: `🔥 *Here's <@${targetSlackId}>'s roast:*`,
+                      text: `🌟 *Here's a compliment for <@${targetSlackId}>'s music taste:*`,
                     },
                   },
                   {
@@ -147,9 +147,9 @@ Deliver a hilarious, cutting roast that drags their taste through the mud. Be ed
                     text: {
                       type: "mrkdwn",
                       text:
-                        roast.length > 3000
-                          ? roast.slice(0, 2997) + "..."
-                          : roast,
+                        compliment.length > 3000
+                          ? compliment.slice(0, 2997) + "..."
+                          : compliment,
                     },
                   },
                   {
@@ -164,10 +164,10 @@ Deliver a hilarious, cutting roast that drags their taste through the mud. Be ed
                 ],
               });
             } catch (e) {
-              console.error("Roast fetch error:", e);
+              console.error("Compliment fetch error:", e);
               respond({
                 response_type: "ephemeral",
-                text: ":x: Failed to generate roast.",
+                text: ":x: Failed to generate compliment.",
               });
             }
           }

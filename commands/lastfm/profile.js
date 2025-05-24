@@ -49,8 +49,8 @@ module.exports = (app) => {
     }
 
     db.get(
-      "SELECT lastfm_username FROM user_links WHERE slack_user_id = ?",
-      [targetSlackId],
+      "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
+      [targetSlackId, command.team_id],
       async (err, row) => {
         if (err) {
           await respond({

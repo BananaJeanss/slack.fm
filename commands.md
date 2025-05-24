@@ -41,11 +41,18 @@ A comprehensive guide to all slash commands available in slack.fm.
 | `/topalbums` | Show all-time top 10 albums | `/topalbums [username or @mention]` |
 | `/topartists` | Show all-time top 10 artists | `/topartists [username or @mention]` |
 
+## Whoknows Commands
+
+| Command | Description | Usage |
+|---------|-------------|-------|
+| `/whoknows` | Top 10 people who listen to an artist | `/whoknows [artist]` |
+
 ## Fun Commands
 
 | Command | Description | Usage |
 |---------|-------------|-------|
 | `/roast` | Get a roast of your music taste. Rate-limited to 3 uses per hour and 10 uses per day. | `/roast [username or @mention]` |
+| `/compliment` | Opposite of roast, compliments your music. Rate-limited to 3 uses per hour and 10 uses per day. | `/compliment [username or @mention]` |
 
 ## Utility Commands
 

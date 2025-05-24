@@ -8,11 +8,11 @@ module.exports = (app) => {
   app.command("/link", async ({ ack, respond, command }) => {
     await ack();
 
-    // Check if the user is already linked
+    // Check if the user is already linked in this workspace
     const userLink = await new Promise((resolve, reject) => {
       db.get(
-        "SELECT * FROM user_links WHERE slack_user_id = ?",
-        [command.user_id],
+        "SELECT * FROM user_links WHERE slack_user_id = ? AND workspace_id = ? AND workspace_id = ?",
+        [command.user_id, command.team_id],
         (err, row) => {
           if (err) {
             console.error("Error fetching user link:", err);
@@ -24,12 +24,12 @@ module.exports = (app) => {
     });
 
     const state = crypto.randomBytes(16).toString("hex");
-    const queryString = `slack_user_id=${command.user_id}&state=${state}`;
+    const queryString = `slack_user_id=${command.user_id}&workspace_id=${command.team_id}&state=${state}`;
     const fullCallbackUrl = `${LASTFM_CALLBACK_URL}?${queryString}`;
 
     db.run(
-      "INSERT INTO link_states (slack_user_id, state, created_at) VALUES (?, ?, ?)",
-      [command.user_id, state, Date.now()]
+      "INSERT INTO link_states (slack_user_id, workspace_id, state, created_at) VALUES (?, ?, ?, ?)",
+      [command.user_id, command.team_id, state, Date.now()]
     );
 
     const authUrl = `https://www.last.fm/api/auth?api_key=${LASTFM_API_KEY}&cb=${encodeURIComponent(
@@ -38,26 +38,26 @@ module.exports = (app) => {
 
     const blocks = [];
     if (userLink) {
-        blocks.push({
-            type: "section",
-            text: {
-                type: "mrkdwn",
-                text: `You are already linked to Last.fm account: ${userLink.lastfm_username}`,
-            },
-        });
-    }
-    
-    blocks.push({
+      blocks.push({
         type: "section",
         text: {
-            type: "mrkdwn",
-            text: `🔗 Click to link your Last.fm account:\n<${authUrl}|Authenticate with Last.fm>\n\nThis link expires in *10 minutes*.`,
+          type: "mrkdwn",
+          text: `You are already linked to Last.fm account: ${userLink.lastfm_username}`,
         },
+      });
+    }
+
+    blocks.push({
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: `🔗 Click to link your Last.fm account:\n<${authUrl}|Authenticate with Last.fm>\n\nThis link expires in *10 minutes*.`,
+      },
     });
 
     await respond({
-        response_type: "ephemeral",
-        blocks: blocks,
+      response_type: "ephemeral",
+      blocks: blocks,
     });
   });
 };

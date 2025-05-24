@@ -6,11 +6,11 @@ module.exports = (app) => {
     await ack();
 
     try {
-      // fetch the link record
+      // fetch the link record for this user in this workspace
       const userLink = await new Promise((resolve, reject) => {
         db.get(
-          "SELECT lastfm_username FROM user_links WHERE slack_user_id = ?",
-          [command.user_id],
+          "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ? AND workspace_id = ?",
+          [command.user_id, command.team_id],
           (err, row) => {
             if (err) {
               console.error("DB error fetching user link:", err);
@@ -49,8 +49,8 @@ module.exports = (app) => {
                   text: "Unlink"
                 },
                 style: "danger",
-                action_id: "confirm_unlink",      // ← matches app.action below
-                value: command.user_id           // ← pass the Slack user ID
+                action_id: "confirm_unlink",
+                value: `${command.user_id}|${command.team_id}` // Pass both user and workspace
               }
             ]
           }
@@ -70,11 +70,12 @@ module.exports = (app) => {
     console.log("🔧 confirm_unlink fired for", body.user.id);
     await ack();
 
-    const slackUserId = action.value;
+    // Extract both user and workspace ID
+    const [slackUserId, workspaceId] = action.value.split("|");
 
     db.run(
-      "DELETE FROM user_links WHERE slack_user_id = ?",
-      [slackUserId],
+      "DELETE FROM user_links WHERE slack_user_id = ? AND workspace_id = ? AND workspace_id = ?",
+      [slackUserId, workspaceId],
       (err) => {
         if (err) {
           console.error("DB error deleting link:", err);

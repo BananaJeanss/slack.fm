@@ -13,7 +13,7 @@ const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 router.get("/lastfm/callback", async (req, res) => {
   console.log("Callback received with params:", req.query);
-  const { token, slack_user_id, state } = req.query;
+  const { token, slack_user_id, workspace_id, state } = req.query;
 
   const params = {
     api_key: API_KEY,
@@ -29,7 +29,7 @@ router.get("/lastfm/callback", async (req, res) => {
   const api_sig = md5(sigString);
 
   // Check if valid request
-  if (!token || !slack_user_id || !state) {
+  if (!token || !slack_user_id || !workspace_id || !state) {
     return res
       .status(400)
       .sendFile(path.join(__dirname, "./views/invalid.html"));
@@ -37,8 +37,8 @@ router.get("/lastfm/callback", async (req, res) => {
 
   // Validate state
   db.get(
-    "SELECT * FROM link_states WHERE slack_user_id = ? AND state = ?",
-    [slack_user_id, state],
+    "SELECT * FROM link_states WHERE slack_user_id = ? AND workspace_id = ? AND state = ?",
+    [slack_user_id, workspace_id, state],
     async (err, row) => {
       if (err || !row || Date.now() - row.created_at > 10 * 60 * 1000) {
         return res
@@ -47,10 +47,10 @@ router.get("/lastfm/callback", async (req, res) => {
       }
 
       // Optionally: delete state after use
-      db.run("DELETE FROM link_states WHERE slack_user_id = ? AND state = ?", [
-        slack_user_id,
-        state,
-      ]);
+      db.run(
+        "DELETE FROM link_states WHERE slack_user_id = ? AND workspace_id = ? AND state = ?",
+        [slack_user_id, workspace_id, state]
+      );
 
       // Request session key
       const url = `https://ws.audioscrobbler.com/2.0/?method=auth.getSession&api_key=${API_KEY}&token=${token}&api_sig=${api_sig}&format=json`;
@@ -59,10 +59,10 @@ router.get("/lastfm/callback", async (req, res) => {
         const session = response.data.session;
         if (!session) throw new Error("No session key returned");
 
-        // Store session.key and session.name in DB with slack_user_id
+        // Store session.key and session.name in DB with slack_user_id and workspace_id
         db.run(
-          "INSERT OR REPLACE INTO user_links (slack_user_id, lastfm_username, session_key) VALUES (?, ?, ?)",
-          [slack_user_id, session.name, session.key]
+          "INSERT OR REPLACE INTO user_links (slack_user_id, workspace_id, lastfm_username, session_key) VALUES (?, ?, ?, ?)",
+          [slack_user_id, workspace_id, session.name, session.key]
         );
 
         try {
