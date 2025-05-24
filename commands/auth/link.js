@@ -27,6 +27,11 @@ module.exports = (app) => {
     const queryString = `slack_user_id=${command.user_id}&state=${state}`;
     const fullCallbackUrl = `${LASTFM_CALLBACK_URL}?${queryString}`;
 
+    db.run(
+      "INSERT INTO link_states (slack_user_id, state, created_at) VALUES (?, ?, ?)",
+      [command.user_id, state, Date.now()]
+    );
+
     const authUrl = `https://www.last.fm/api/auth?api_key=${LASTFM_API_KEY}&cb=${encodeURIComponent(
       fullCallbackUrl
     )}`;

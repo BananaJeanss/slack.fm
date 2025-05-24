@@ -44,16 +44,12 @@ expressApp.listen(PORT, () => {
   console.log(`Express server listening on port ${PORT}`);
 });
 
-// Clear roast ratelimit database
-const cutoff = Date.now() - 3 * 86400 * 1000;
-db.run("DELETE FROM roast_usage WHERE timestamp < ?", [cutoff]);
+// Serve static files for views (CSS, images, etc.)
+const viewsPath = path.join(__dirname, "routes", "views");
+expressApp.use("/lastfm", express.static(viewsPath));
 
-setInterval(() => {
-  const cutoff = Date.now() - 3 * 86400 * 1000;
-  db.run("DELETE FROM roast_usage WHERE timestamp < ?", [cutoff]);
-}, 3600000); // every hour
-
-
+// DB Cleanup
+require("./dbcleanup");
 
 // Start the Slack app
 (async () => {
