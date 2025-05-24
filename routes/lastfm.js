@@ -8,6 +8,9 @@ const path = require("path");
 const API_KEY = process.env.LASTFM_API_KEY;
 const API_SECRET = process.env.LASTFM_SHARED_SECRET;
 
+const { WebClient } = require("@slack/web-api");
+const web = new WebClient(process.env.SLACK_BOT_TOKEN);
+
 router.get("/lastfm/callback", async (req, res) => {
   console.log("Callback received with params:", req.query);
   const { token, slack_user_id, state } = req.query;
@@ -61,6 +64,15 @@ router.get("/lastfm/callback", async (req, res) => {
           "INSERT OR REPLACE INTO user_links (slack_user_id, lastfm_username, session_key) VALUES (?, ?, ?)",
           [slack_user_id, session.name, session.key]
         );
+
+        try {
+          await web.chat.postMessage({
+            channel: slack_user_id,
+            text: `✅ Your Last.fm account (${session.name}) is now linked to slack.fm!`,
+          });
+        } catch (e) {
+          console.error("Failed to send DM:", e);
+        }
 
         return res
           .status(200)

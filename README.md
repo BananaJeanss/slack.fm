@@ -3,8 +3,7 @@
     <img src="assets/slackfm.png" alt="slack.fm logo" width="150"/>
 </p>
 
-# slack.fm 
-
+# slack.fm
 
 A last.fm bot for Slack
 
@@ -54,6 +53,8 @@ To self-host slack.fm, follow these steps:
 - `LASTFM_API_KEY` – Your Last.fm API key
 - `LASTFM_SHARED_SECRET` – Your Last.fm shared secret
 - `LASTFM_CALLBACK_URL` – OAuth callback URL for last.fm
+- `SPOTIFY_CLIENT_ID` – Your Spotify client ID
+- `SPOTIFY_CLIENT_SECRET` – Your Spotify client secret
 
 ## Usage
 
@@ -69,6 +70,8 @@ Once the bot is running and added to your Slack workspace, you can use these bas
 | `/song`         | Show info about your last played song       |
 | `/roast`        | Get roasted for your music taste            |
 
+More commands can be found in the [commands.md](commands.md) file.
+
 ## Contributing
 
 Contributions are welcome! Please fork the repository and create a pull request. For major changes, open an issue first to discuss what you’d like to change.
@@ -81,3 +84,4 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 - [last.fm api](https://www.last.fm/api)
 - [Slack API/Bolt](https://api.slack.com/bolt)
+- [Spotify API](https://developer.spotify.com/documentation/web-api/)

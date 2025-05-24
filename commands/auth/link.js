@@ -51,7 +51,7 @@ module.exports = (app) => {
         type: "section",
         text: {
             type: "mrkdwn",
-            text: `🔗 Click to link your Last.fm account:\n<${authUrl}|Authenticate with Last.fm>`,
+            text: `🔗 Click to link your Last.fm account:\n<${authUrl}|Authenticate with Last.fm>\n\nThis link expires in *10 minutes*.`,
         },
     });
 
