@@ -29,6 +29,15 @@ db.serialize(() => {
     )
   `);
 
+  db.run(`
+  CREATE TABLE IF NOT EXISTS workspace_tokens (
+    workspace_id TEXT NOT NULL PRIMARY KEY,
+    access_token TEXT NOT NULL,
+    bot_user_id TEXT NOT NULL,
+    installed_at INTEGER NOT NULL
+  )
+  `);
+
   db.run(
     `CREATE INDEX IF NOT EXISTS idx_roast_time ON roast_usage(slack_user_id, timestamp)`
   );

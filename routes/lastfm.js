@@ -11,8 +11,7 @@ const API_SECRET = process.env.LASTFM_SHARED_SECRET;
 const { WebClient } = require("@slack/web-api");
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 
-router.get("/lastfm/callback", async (req, res) => {
-  console.log("Callback received with params:", req.query);
+router.get('/callback', async (req, res) => {
   const { token, slack_user_id, workspace_id, state } = req.query;
 
   const params = {

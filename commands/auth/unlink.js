@@ -67,7 +67,6 @@ module.exports = (app) => {
 
   // single handler for the confirmation button
   app.action("confirm_unlink", async ({ ack, body, action, respond }) => {
-    console.log("🔧 confirm_unlink fired for", body.user.id);
     await ack();
 
     // Extract both user and workspace ID

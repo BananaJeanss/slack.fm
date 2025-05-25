@@ -3,12 +3,15 @@ const express = require("express");
 const dotenv = require("dotenv");
 const fs = require("fs");
 const path = require("path");
+const helmet = require("helmet");
 const db = require("./db");
 
 dotenv.config();
 
 // Initialize Express app
 const expressApp = express();
+expressApp.use(helmet());
+expressApp.disable("x-powered-by"); 
 
 // Initialize Slack Bolt app
 const app = new App({
@@ -21,9 +24,6 @@ const app = new App({
 expressApp.use(express.json());
 expressApp.use(express.urlencoded({ extended: true }));
 
-// Load routes
-expressApp.use(require('./routes/lastfm'));
-
 // Recursively load commands from /commands
 const loadCommands = (dir) => {
   fs.readdirSync(dir).forEach((file) => {
@@ -35,18 +35,18 @@ const loadCommands = (dir) => {
     }
   });
 };
-
 loadCommands(path.join(__dirname, "commands"));
+
+// linking setup
+const viewsPath = path.join(__dirname, "routes", "views");
+expressApp.use('/lastfm', express.static(viewsPath));
+expressApp.use('/lastfm', require('./routes/lastfm'));
 
 // Start the Express server
 const PORT = process.env.PORT || 3000;
-expressApp.listen(PORT, () => {
-  console.log(`Express server listening on port ${PORT}`);
-});
-
-// Serve static files for views (CSS, images, etc.)
-const viewsPath = path.join(__dirname, "routes", "views");
-expressApp.use("/lastfm", express.static(viewsPath));
+expressApp.listen(PORT, '0.0.0.0', () =>
+  console.log(`Express up on ${PORT}`)
+);
 
 // DB Cleanup
 require("./dbcleanup");
