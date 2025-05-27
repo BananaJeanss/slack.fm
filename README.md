@@ -58,6 +58,7 @@ To self-host slack.fm, follow these steps:
 - `LASTFM_CALLBACK_URL` – OAuth callback URL for Last.fm (must be a valid URL)
 - `SPOTIFY_CLIENT_ID` – Your Spotify client ID
 - `SPOTIFY_CLIENT_SECRET` – Your Spotify client secret
+- `USE_LANGUAGE_FILTERING` – `true` or `false` to enable/disable language filtering for output
 
 ## Usage
 
@@ -66,6 +67,7 @@ Once the bot is running and added to your Slack workspace, you can use these bas
 | Command          | Description                                  |
 | ---------------- | -------------------------------------------- |
 | `/link`          | Link your Last.fm account                    |
+| `/unlink`        | Unlink your Last.fm account                  |
 | `/nowplaying`    | Shows your (or another user’s) current track |
 | `/profile`       | Shows Last.fm profile info                   |
 | `/artist`        | Shows info about your last played artist     |
