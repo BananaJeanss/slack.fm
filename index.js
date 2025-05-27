@@ -6,12 +6,16 @@ const path = require("path");
 const helmet = require("helmet");
 const rateLimit = require("express-rate-limit");
 const respondWithFooter = require("./utils/responsefooter");
-const validateEnv = require("./utils/validateEnv");
+const validateEnv = require("./utils/validateenv");
+const axios = require("axios");
 
 dotenv.config();
 
 // env validation
 validateEnv();
+
+// axios timeout
+axios.defaults.timeout = 10000; // 10 seconds 
 
 // Initialize Express app
 const expressApp = express();
