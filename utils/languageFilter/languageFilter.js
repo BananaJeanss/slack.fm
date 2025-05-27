@@ -2,20 +2,31 @@ const Filter = require('bad-words');
 const fs = require('fs');
 const path = require('path');
 
-// Load custom list
+// Load custom bad words
 const customWordsPath = path.join(__dirname, 'customBadWords.json');
 let customWords = [];
-
 try {
   customWords = JSON.parse(fs.readFileSync(customWordsPath, 'utf8'));
 } catch (err) {
-  console.warn('Failed to load custom word list:', err);
+  console.warn('Failed to load custom bad word list:', err);
 }
 
-// Initialize filter and add custom words
+// Load custom whitelist
+const customWhitelistPath = path.join(__dirname, 'customWhitelist.json');
+let customWhitelist = [];
+try {
+  customWhitelist = JSON.parse(fs.readFileSync(customWhitelistPath, 'utf8'));
+} catch (err) {
+  console.warn('Failed to load custom whitelist:', err);
+}
+
+// Initialize filter, add custom words, remove whitelisted words
 const filter = new Filter();
 if (Array.isArray(customWords)) {
   filter.addWords(...customWords);
+}
+if (Array.isArray(customWhitelist)) {
+  filter.removeWords(...customWhitelist);
 }
 
 function censor(text) {

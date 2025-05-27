@@ -25,5 +25,6 @@ build/
 *.sqlite-shm
 *.sqlite-wal
 
-# bad words list
+# languageFilter blacklist/whitelist
 customBadWords.json
+customWhitelist.json
