@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const db = require('../../utils/db');
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
+const getDisplayName = require('../../utils/getDisplayName');
 
 module.exports = (app) => {
   app.command('/whoslistening', async ({ command, ack, respond }) => {
@@ -44,6 +45,7 @@ module.exports = (app) => {
             if (track && track['@attr']?.nowplaying === 'true') {
               listeningUsers.push({
                 slack_user_id: row.slack_user_id,
+                display_name: await getDisplayName(row.slack_user_id),
                 lastfm_username: row.lastfm_username,
                 artist: track.artist['#text'],
                 song: track.name,
@@ -86,14 +88,14 @@ module.exports = (app) => {
           { type: 'divider' },
         ];
 
-        selectedUsers.forEach((user, index) => {
+        selectedUsers.forEach((user) => {
           const trackText = `*${user.song}* by *${user.artist}*${user.album ? `\n_Album: ${user.album}_` : ''}`;
 
           blocks.push({
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `🎵 <@${user.slack_user_id}> is jamming to:\n${trackText}`,
+              text: `🎵 ${user.display_name} is jamming to:\n${trackText}`,
             },
             ...(user.image && {
               accessory: {

@@ -4,6 +4,7 @@ const db = require('../../utils/db');
 const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
+const getDisplayName = require('../../utils/getDisplayName');
 
 module.exports = (app) => {
   app.command('/album', async ({ ack, respond, command }) => {
@@ -127,12 +128,13 @@ module.exports = (app) => {
             summaryText = summaryText.slice(0, 590) + '…';
           }
 
+          const displayName = await getDisplayName(targetSlackId);
           const blocks = [
             {
               type: 'section',
               text: {
                 type: 'mrkdwn',
-                text: `📀 *Last played album by* <@${targetSlackId}>`,
+                text: `📀 *Last played album by* ${displayName}`,
               },
             },
 
@@ -161,7 +163,7 @@ module.exports = (app) => {
                 },
                 {
                   type: 'mrkdwn',
-                  text: `*<@${targetSlackId}> plays:*\n${yourPlays} scrobbles`,
+                  text: `*${displayName} plays:*\n${yourPlays} scrobbles`,
                 },
               ],
             },

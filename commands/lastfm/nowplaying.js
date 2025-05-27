@@ -4,6 +4,7 @@ const db = require('../../utils/db');
 const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
+const getDisplayName = require('../../utils/getDisplayName');
 
 module.exports = (app) => {
   app.command('/nowplaying', async ({ ack, respond, command }) => {
@@ -86,7 +87,8 @@ module.exports = (app) => {
             return;
           }
 
-          const userTag = `<@${targetSlackId}>`;
+          const displayName = await getDisplayName(targetSlackId);
+          const userTag = displayName || 'This user';
           const isNowPlaying = track['@attr']?.nowplaying === 'true';
           const artist = track.artist['#text'];
           const song = track.name;

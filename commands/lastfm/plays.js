@@ -4,6 +4,7 @@ const db = require('../../utils/db');
 const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
+const getDisplayName = require('../../utils/getDisplayName');
 
 module.exports = (app) => {
   app.command('/plays', async ({ ack, respond, command }) => {
@@ -116,9 +117,10 @@ module.exports = (app) => {
             monthlyRes.data.recenttracks['@attr'].total
           );
 
+          const displayName = await getDisplayName(targetSlackId);
           await respond({
             response_type: 'in_channel',
-            text: `📈 <@${targetSlackId}>'s scrobbles:
+            text: `📈 ${displayName}'s scrobbles:
 • *Total:* ${totalScrobbles.toLocaleString()}
 • *This month:* ${monthlyScrobbles.toLocaleString()}
 • *This week:* ${weeklyScrobbles.toLocaleString()}

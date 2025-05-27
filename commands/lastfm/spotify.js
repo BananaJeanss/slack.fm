@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const db = require('../../utils/db');
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
+const getDisplayName = require('../../utils/getDisplayName');
 
 async function getSpotifyAccessToken() {
   const auth = Buffer.from(
@@ -95,9 +96,9 @@ module.exports = (app) => {
             }
 
             const url = items[0].external_urls.spotify;
+            const displayName = await getDisplayName(targetSlackId);
             return respond({
-              response_type: 'in_channel',
-              text: `<@${targetSlackId}>, here's the Spotify link for *${title}* by *${artist}*:\n${url}`,
+              text: `${displayName || 'This user'}, here's the Spotify link for *${title}* by *${artist}*:\n${url}`,
             });
           } catch (e) {
             console.error('Error in /spotify:', e.message);

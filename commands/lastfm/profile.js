@@ -1,6 +1,7 @@
 require('dotenv').config();
 const axios = require('axios');
 const db = require('../../utils/db');
+const getDisplayName = require('../../utils/getDisplayName');
 
 const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
@@ -80,7 +81,7 @@ module.exports = (app) => {
           const { data } = await axios.get(url);
 
           const profile = data.user;
-          const tag = `<@${targetSlackId}>`;
+          const tag = await getDisplayName(targetSlackId);
 
           const blocks = [
             {

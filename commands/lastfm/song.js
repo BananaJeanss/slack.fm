@@ -2,6 +2,7 @@ require('dotenv').config();
 const axios = require('axios');
 const db = require('../../utils/db');
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
+const getDisplayName = require('../../utils/getDisplayName');
 
 module.exports = (app) => {
   app.command('/song', async ({ ack, respond, command }) => {
@@ -83,12 +84,13 @@ module.exports = (app) => {
               summaryText = summaryText.slice(0, 590) + '…';
             }
 
+            const displayName = await getDisplayName(targetSlackId);
             const blocks = [
               {
                 type: 'section',
                 text: {
                   type: 'mrkdwn',
-                  text: `${nowPlaying ? '🎧' : '🎵'} *Last played track by* <@${targetSlackId}>`,
+                  text: `${nowPlaying ? '🎧' : '🎵'} *Last played track by* ${displayName}`,
                 },
               },
               {
@@ -109,7 +111,7 @@ module.exports = (app) => {
                   { type: 'mrkdwn', text: `*Global plays:*\n${globalPlays}` },
                   {
                     type: 'mrkdwn',
-                    text: `*<@${targetSlackId}> plays:*\n${yourPlays}`,
+                    text: `*${displayName} plays:*\n${yourPlays}`,
                   },
                 ],
               },

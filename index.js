@@ -8,6 +8,7 @@ const rateLimit = require('express-rate-limit');
 const respondWithFooter = require('./utils/responsefooter');
 const validateEnv = require('./utils/validateenv');
 const axios = require('axios');
+const { filterPayload } = require('./utils/languageFilter');
 
 dotenv.config();
 
@@ -68,7 +69,20 @@ app.command = (commandName, handler) => {
 
     commandCooldowns.set(commandKey, now);
     const wrappedRespond = respondWithFooter(args.respond, args.command);
-    await handler({ ...args, respond: wrappedRespond });
+
+    // use language filtering if enabled
+    const languageFiltering =
+      process.env.USE_LANGUAGE_FILTERING === 'true' ||
+      process.env.USE_LANGUAGE_FILTERING === '1';
+
+    const filteredRespond = async (payload) => {
+      if (languageFiltering) {
+        payload = filterPayload({ ...payload });
+      }
+      return wrappedRespond(payload);
+    };
+
+    await handler({ ...args, respond: filteredRespond });
   });
 };
 

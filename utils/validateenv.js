@@ -26,6 +26,13 @@ const validateEnv = () => {
     process.exit(1);
   }
 
+  if (!process.env.USE_LANGUAGE_FILTERING) {
+    process.env.USE_LANGUAGE_FILTERING = 'false';
+    console.warn(
+      "⚠️ USE_LANGUAGE_FILTERING not set in env, defaulting to 'false'"
+    );
+  }
+
   // validate formats
   const validations = [
     {

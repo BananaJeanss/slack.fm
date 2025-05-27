@@ -1,9 +1,8 @@
 require('dotenv').config();
 const axios = require('axios');
 const db = require('../../../utils/db');
-const { WebClient } = require('@slack/web-api');
-const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
+const getDisplayName = require('../../../utils/getDisplayName');
 
 module.exports = (app) => {
   app.command('/whoknows', async ({ ack, respond, command }) => {
@@ -109,11 +108,6 @@ module.exports = (app) => {
         // Sort by playcount descending
         playcounts.sort((a, b) => b.userplaycount - a.userplaycount);
 
-        // Find the requesting user's rank
-        const userIndex = playcounts.findIndex(
-          (u) => u.slack_user_id === targetSlackId
-        );
-
         // Prepare leaderboard
         const blocks = [
           {
@@ -126,25 +120,35 @@ module.exports = (app) => {
           { type: 'divider' },
         ];
 
-        for (let i = 0; i < Math.min(10, playcounts.length); i++) {
-          const user = playcounts[i];
+        const playcountsWithNames = await Promise.all(
+          playcounts.map(async (entry) => {
+            const displayName = await getDisplayName(entry.slack_user_id);
+            return { ...entry, displayName: displayName || 'Unknown user' };
+          })
+        );
+
+        for (let i = 0; i < Math.min(10, playcountsWithNames.length); i++) {
+          const user = playcountsWithNames[i];
           blocks.push({
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `*${i + 1}. <@${user.slack_user_id}>* — ${user.userplaycount} plays`,
+              text: `*${i + 1}. ${user.displayName}* — ${user.userplaycount} plays`,
             },
           });
         }
 
         // If the user isn't in the top 10, show their rank
+        const userIndex = playcountsWithNames.findIndex(
+          (u) => u.slack_user_id === targetSlackId
+        );
         if (userIndex >= 10) {
           blocks.push({ type: 'divider' });
           blocks.push({
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `Your rank: *${userIndex + 1}* — ${playcounts[userIndex].userplaycount} plays`,
+              text: `Your rank: *${userIndex + 1}* — ${playcountsWithNames[userIndex].userplaycount} plays`,
             },
           });
         }
