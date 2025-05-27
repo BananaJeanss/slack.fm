@@ -142,11 +142,13 @@ module.exports = (app) => {
           );
 
           const albumInfo = albumInfoRes.data.album;
-          albumImage = albumInfo?.image?.find((i) => i.size === 'extralarge')?.['#text'] ||
+          albumImage =
+            albumInfo?.image?.find((i) => i.size === 'extralarge')?.['#text'] ||
             'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
         } catch (e) {
           console.warn('Failed to fetch album cover:', e.message);
-          albumImage = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+          albumImage =
+            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
         }
 
         // Fetch playcount for each user (parallel, but be mindful of rate limits)

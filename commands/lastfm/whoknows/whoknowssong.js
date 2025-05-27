@@ -137,12 +137,15 @@ module.exports = (app) => {
           const trackInfo = songInfoRes.data.track;
           // Prefer track image, fallback to album image, then placeholder
           songImage =
-            trackInfo?.album?.image?.find((i) => i.size === 'extralarge')?.['#text'] ||
+            trackInfo?.album?.image?.find((i) => i.size === 'extralarge')?.[
+              '#text'
+            ] ||
             trackInfo?.album?.image?.pop()?.['#text'] ||
             'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
         } catch (e) {
           console.warn('Failed to fetch song/album cover:', e.message);
-          songImage = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+          songImage =
+            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
         }
 
         // Fetch playcount for each user (parallel, but be mindful of rate limits)

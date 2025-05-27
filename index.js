@@ -15,8 +15,10 @@ dotenv.config();
 // env validation
 validateEnv();
 
-// axios timeout
+// axios setup
 axios.defaults.timeout = 10000; // 10 seconds
+axios.defaults.headers.common['User-Agent'] =
+  `slack.fm/${process.env.npm_package_version} (+https://github.com/bananajeanss/slack.fm)`;
 
 // Initialize Express app
 const expressApp = express();

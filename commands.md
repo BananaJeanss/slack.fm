@@ -22,17 +22,17 @@ A comprehensive guide to all slash commands available in slack.fm.
 | Command          | Description                              | Usage                              |
 | ---------------- | ---------------------------------------- | ---------------------------------- |
 | `/nowplaying`    | Show current or last played track        | `/nowplaying [@mention]`           |
-| `/cover`         | Show album art for current/last track    | `/cover [@mention]`                |
+| `/cover`         | Show album art for current/last track    | `/cover [@mention or album name]`  |
 | `/spotify`       | Get Spotify link for current/last track  | `/spotify [@mention or song name]` |
 | `/whoslistening` | Show who is currently listening to music | `/whoslistening`                   |
 
 ## Music Info Commands
 
-| Command   | Description                                                    | Usage                           |
-| --------- | -------------------------------------------------------------- | ------------------------------- |
-| `/song`   | Show detailed info about last played song or search for a song | `/song [@mention or song name]` |
-| `/album`  | Show detailed info about last played album                     | `/album [@mention]`             |
-| `/artist` | Show detailed info about last played artist                    | `/artist [@mention]`            |
+| Command   | Description                                                    | Usage                               |
+| --------- | -------------------------------------------------------------- | ----------------------------------- |
+| `/song`   | Show detailed info about last played song or search for a song | `/song [@mention or song name]`     |
+| `/album`  | Show detailed info about last played album                     | `/album [@mention or album name]`   |
+| `/artist` | Show detailed info about last played artist                    | `/artist [@mention or artist name]` |
 
 ## Top Charts Commands
 
