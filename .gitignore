@@ -24,3 +24,6 @@ build/
 *.db-wal
 *.sqlite-shm
 *.sqlite-wal
+
+# bad words list
+customBadWords.json

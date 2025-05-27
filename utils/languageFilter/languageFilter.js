@@ -3,7 +3,7 @@ const fs = require('fs');
 const path = require('path');
 
 // Load custom list
-const customWordsPath = path.join(__dirname, 'customList.json');
+const customWordsPath = path.join(__dirname, 'customBadWords.json');
 let customWords = [];
 
 try {
