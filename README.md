@@ -19,6 +19,8 @@ A last.fm bot for Slack
 - See detailed stats for songs, albums, and artists
 - Easy-to-use Slack slash commands
 
+<img src="assets/song.png" alt="Song command example" width="400"/>
+
 ## Installation
 
 To self-host slack.fm, follow these steps:
@@ -26,7 +28,7 @@ To self-host slack.fm, follow these steps:
 1. **Clone the repository:**
 
     ```bash
-    git clone https://github.com/yourusername/slack.fm.git
+    git clone https://github.com/bananajeanss/slack.fm.git
     cd slack.fm
     ```
 
@@ -47,12 +49,14 @@ To self-host slack.fm, follow these steps:
 
 ## Environment Variables
 
-- `SLACK_BOT_TOKEN` – Your Slack bot token
-- `SLACK_APP_TOKEN` – Your Slack app-level token
+- `SLACK_CLIENT_ID` – Your Slack app client ID
+- `SLACK_CLIENT_SECRET` – Your Slack app client secret
+- `SLACK_BOT_TOKEN` – Your Slack bot token (starts with `xoxb-`)
+- `SLACK_APP_TOKEN` – Your Slack app-level token (starts with `xapp-`)
 - `SLACK_SIGNING_SECRET` – Your Slack signing secret
 - `LASTFM_API_KEY` – Your Last.fm API key
 - `LASTFM_SHARED_SECRET` – Your Last.fm shared secret
-- `LASTFM_CALLBACK_URL` – OAuth callback URL for last.fm
+- `LASTFM_CALLBACK_URL` – OAuth callback URL for Last.fm (must be a valid URL)
 - `SPOTIFY_CLIENT_ID` – Your Spotify client ID
 - `SPOTIFY_CLIENT_SECRET` – Your Spotify client secret
 
@@ -63,11 +67,13 @@ Once the bot is running and added to your Slack workspace, you can use these bas
 | Command         | Description                                 |
 |-----------------|---------------------------------------------|
 | `/link`         | Link your Last.fm account                   |
-| `/nowplaying`   | Show your (or another user’s) current track |
-| `/profile`      | Show Last.fm profile info                   |
-| `/artist`       | Show info about your last played artist     |
-| `/album`        | Show info about your last played album      |
-| `/song`         | Show info about your last played song       |
+| `/nowplaying`   | Shows your (or another user’s) current track|
+| `/profile`      | Shows Last.fm profile info                  |
+| `/artist`       | Shows info about your last played artist    |
+| `/album`        | Shows info about your last played album     |
+| `/song`         | Shows info about your last played song      |
+| `/whoknows`     | Shows top listeners for an artist           |
+| `/whoslistening`| Shows who is listening to a track           |
 | `/roast`        | Get roasted for your music taste            |
 
 More commands can be found in the [commands.md](commands.md) file.
@@ -82,6 +88,9 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## Acknowledgements
 
-- [last.fm api](https://www.last.fm/api)
+- [Last.fm API](https://www.last.fm/api)
 - [Slack API/Bolt](https://api.slack.com/bolt)
 - [Spotify API](https://developer.spotify.com/documentation/web-api/)
+- [SQLite](https://www.sqlite.org/) - Local database storage
+- [Express.js](https://expressjs.com/) - Web framework for routing
+- [Axios](https://axios-http.com/) - HTTP client for API requests

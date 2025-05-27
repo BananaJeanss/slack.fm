@@ -1,4 +1,4 @@
-const db = require("../../db");
+const db = require("../../utils/db");
 
 module.exports = (app) => {
   // /unlink command
@@ -9,7 +9,7 @@ module.exports = (app) => {
       // fetch the link record for this user in this workspace
       const userLink = await new Promise((resolve, reject) => {
         db.get(
-          "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ? AND workspace_id = ?",
+          "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
           [command.user_id, command.team_id],
           (err, row) => {
             if (err) {

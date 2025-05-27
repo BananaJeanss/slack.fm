@@ -1,6 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
-const db = require("../../db");
+const db = require("../../utils/db");
 
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 

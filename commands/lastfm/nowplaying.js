@@ -1,6 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
-const db = require("../../db");
+const db = require("../../utils/db");
 const { WebClient } = require("@slack/web-api");
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
@@ -98,9 +98,27 @@ module.exports = (app) => {
             track.image?.find((img) => img.size === "extralarge")?.["#text"] ||
             fallbackAlbumImage;
 
-          const messageHeader = isNowPlaying
+          let userPlaycount = null;
+          try {
+            const infoRes = await axios.get(
+              `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&artist=${encodeURIComponent(
+                artist
+              )}&track=${encodeURIComponent(song)}&username=${encodeURIComponent(
+                username
+              )}&api_key=${LASTFM_API_KEY}&format=json`
+            );
+            userPlaycount = infoRes.data.track?.userplaycount ?? null;
+          } catch (e) {
+            console.warn("Could not fetch userplaycount for track:", e.message);
+          }
+
+          let messageHeader = isNowPlaying
             ? `🎶 ${userTag} is now playing:\n*${song}* by *${artist}*`
             : `📻 ${userTag} last played:\n*${song}* by *${artist}*`;
+
+          if (userPlaycount !== null) {
+            messageHeader += `\n\nScrobbles: ${userPlaycount}`;
+          }
 
           const blocks = [
             {

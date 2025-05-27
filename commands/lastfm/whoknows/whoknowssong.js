@@ -6,14 +6,16 @@ const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/whoknows", async ({ ack, respond, command }) => {
+  app.command("/whoknowssong", async ({ ack, respond, command }) => {
     await ack();
 
-    let artist = command.text.trim();
+    let songQuery = command.text.trim();
     let targetSlackId = command.user_id;
+    let artist = "";
+    let song = "";
 
-    // If no artist provided, get last played artist for the user
-    if (!artist) {
+    // If no song provided, get last played song for the user
+    if (!songQuery) {
       // Get user's lastfm username
       const row = await new Promise((resolve) =>
         db.get(
@@ -43,33 +45,71 @@ module.exports = (app) => {
           });
         }
         artist = track.artist["#text"];
+        song = track.name;
       } catch (e) {
         return respond({
           response_type: "ephemeral",
-          text: "⚠️ Could not fetch your last played artist.",
+          text: "⚠️ Could not fetch your last played song.",
         });
       }
     } else {
-      // Search for the artist to get the correct capitalization and exact match
+      // Parse input - support both "song" and "artist - song" formats
+      if (songQuery.includes(" - ")) {
+        const parts = songQuery.split(" - ");
+        artist = parts[0].trim();
+        song = parts.slice(1).join(" - ").trim();
+      } else {
+        // Just song name, try to search
+        try {
+          const searchRes = await axios.get(
+            `https://ws.audioscrobbler.com/2.0/?method=track.search&track=${encodeURIComponent(
+              songQuery
+            )}&api_key=${LASTFM_API_KEY}&format=json&limit=1`
+          );
+          
+          const searchResult = searchRes.data.results?.trackmatches?.track?.[0];
+          if (searchResult) {
+            artist = searchResult.artist;
+            song = searchResult.name;
+          } else {
+            return respond({
+              response_type: "ephemeral",
+              text: `⚠️ No song found matching "${songQuery}". Try using "Artist - Song" format.`,
+            });
+          }
+        } catch (e) {
+          return respond({
+            response_type: "ephemeral",
+            text: `⚠️ Could not search for song "${songQuery}". Try using "Artist - Song" format.`,
+          });
+        }
+      }
+
+      // Verify the song exists
       try {
-        const searchRes = await axios.get(
-          `https://ws.audioscrobbler.com/2.0/?method=artist.search&artist=${encodeURIComponent(
+        const verifyRes = await axios.get(
+          `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&artist=${encodeURIComponent(
             artist
-          )}&api_key=${LASTFM_API_KEY}&format=json&limit=1`
+          )}&track=${encodeURIComponent(
+            song
+          )}&api_key=${LASTFM_API_KEY}&format=json`
         );
         
-        const searchResult = searchRes.data.results?.artistmatches?.artist?.[0];
-        if (searchResult) {
-          artist = searchResult.name; // Use the properly formatted name from Last.fm
+        if (verifyRes.data.track) {
+          // Use the properly formatted names from Last.fm
+          artist = verifyRes.data.track.artist.name;
+          song = verifyRes.data.track.name;
         } else {
           return respond({
             response_type: "ephemeral",
-            text: `⚠️ No artist found matching "${artist}". Try a different search term.`,
+            text: `⚠️ Song "${song}" by "${artist}" not found. Try a different search term.`,
           });
         }
       } catch (e) {
-        console.warn("Artist search failed, using original input:", e.message);
-        // Continue with original input if search fails
+        return respond({
+          response_type: "ephemeral",
+          text: `⚠️ Song "${song}" by "${artist}" not found. Try a different search term.`,
+        });
       }
     }
 
@@ -90,13 +130,15 @@ module.exports = (app) => {
           rows.map(async (row) => {
             try {
               const res = await axios.get(
-                `https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${encodeURIComponent(
+                `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&artist=${encodeURIComponent(
                   artist
+                )}&track=${encodeURIComponent(
+                  song
                 )}&username=${encodeURIComponent(
                   row.lastfm_username
                 )}&api_key=${LASTFM_API_KEY}&format=json`
               );
-              const userplaycount = parseInt(res.data.artist?.stats?.userplaycount || 0);
+              const userplaycount = parseInt(res.data.track?.userplaycount || 0);
               return { slack_user_id: row.slack_user_id, userplaycount };
             } catch {
               return { slack_user_id: row.slack_user_id, userplaycount: 0 };
@@ -118,7 +160,7 @@ module.exports = (app) => {
             type: "section",
             text: {
               type: "mrkdwn",
-              text: `:trophy: *Top 10 for* _${artist}_:`,
+              text: `🎵 *Top 10 for* _${song}_ *by* _${artist}_:`,
             },
           },
           { type: "divider" },

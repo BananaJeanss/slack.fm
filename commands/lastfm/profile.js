@@ -1,6 +1,6 @@
 require("dotenv").config();
 const axios = require("axios");
-const db = require("../../db");
+const db = require("../../utils/db");
 
 const { WebClient } = require("@slack/web-api");
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);

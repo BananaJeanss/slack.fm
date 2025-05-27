@@ -1,7 +1,7 @@
 const express = require("express");
 const axios = require("axios");
 const md5 = require("md5");
-const db = require("../db");
+const db = require("../utils/db");
 const router = express.Router();
 const path = require("path");
 

@@ -1,6 +1,6 @@
 const crypto = require("crypto");
 require("dotenv").config();
-const db = require("../../db");
+const db = require("../../utils/db");
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 const LASTFM_CALLBACK_URL = process.env.LASTFM_CALLBACK_URL;
 
@@ -11,7 +11,7 @@ module.exports = (app) => {
     // Check if the user is already linked in this workspace
     const userLink = await new Promise((resolve, reject) => {
       db.get(
-        "SELECT * FROM user_links WHERE slack_user_id = ? AND workspace_id = ? AND workspace_id = ?",
+        "SELECT * FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
         [command.user_id, command.team_id],
         (err, row) => {
           if (err) {
@@ -42,7 +42,7 @@ module.exports = (app) => {
         type: "section",
         text: {
           type: "mrkdwn",
-          text: `You are already linked to Last.fm account: ${userLink.lastfm_username}`,
+          text: `You are already linked to last.fm account: ${userLink.lastfm_username}`,
         },
       });
     }
@@ -51,7 +51,7 @@ module.exports = (app) => {
       type: "section",
       text: {
         type: "mrkdwn",
-        text: `🔗 Click to link your Last.fm account:\n<${authUrl}|Authenticate with Last.fm>\n\nThis link expires in *10 minutes*.`,
+        text: `🔗 Click to link your last.fm account:\n<${authUrl}|Authenticate with last.fm>\n\nThis link expires in *10 minutes*.`,
       },
     });
 
