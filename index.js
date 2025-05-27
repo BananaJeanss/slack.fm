@@ -8,7 +8,7 @@ const rateLimit = require('express-rate-limit');
 const respondWithFooter = require('./utils/responsefooter');
 const validateEnv = require('./utils/validateenv');
 const axios = require('axios');
-const { filterPayload } = require('./utils/languageFilter');
+const { filterPayload } = require('./utils/languageFilter/languageFilter');
 
 dotenv.config();
 

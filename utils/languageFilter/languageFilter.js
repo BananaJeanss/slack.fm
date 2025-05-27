@@ -1,9 +1,22 @@
 const Filter = require('bad-words');
+const fs = require('fs');
+const path = require('path');
 
-// You can optionally add custom words or remove ones you allow
+// Load custom list
+const customWordsPath = path.join(__dirname, 'customList.json');
+let customWords = [];
+
+try {
+  customWords = JSON.parse(fs.readFileSync(customWordsPath, 'utf8'));
+} catch (err) {
+  console.warn('Failed to load custom word list:', err);
+}
+
+// Initialize filter and add custom words
 const filter = new Filter();
-// filter.addWords('niggaz', 'bitches'); // optional
-// filter.removeWords('hell', 'damn');   // optional
+if (Array.isArray(customWords)) {
+  filter.addWords(...customWords);
+}
 
 function censor(text) {
   if (!text || typeof text !== 'string') return text;

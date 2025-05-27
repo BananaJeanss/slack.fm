@@ -21,12 +21,6 @@ async function getDisplayName(userId) {
     name = name.replace(/^@+\s*/, '');
     cache.set(userId, { name, fetched: now });
 
-    console.log('debug info:', {
-      userId,
-      name,
-      fetched: now,
-      cacheSize: cache.size,
-    });
     return name;
   } catch (e) {
     console.warn('Could not fetch display name for', userId, e.message);
