@@ -130,6 +130,25 @@ module.exports = (app) => {
           });
         }
 
+        // Fetch album info to get the cover image
+        let albumImage = null;
+        try {
+          const albumInfoRes = await axios.get(
+            `https://ws.audioscrobbler.com/2.0/?method=album.getInfo&artist=${encodeURIComponent(
+              artist
+            )}&album=${encodeURIComponent(
+              album
+            )}&api_key=${LASTFM_API_KEY}&format=json`
+          );
+
+          const albumInfo = albumInfoRes.data.album;
+          albumImage = albumInfo?.image?.find((i) => i.size === 'extralarge')?.['#text'] ||
+            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+        } catch (e) {
+          console.warn('Failed to fetch album cover:', e.message);
+          albumImage = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+        }
+
         // Fetch playcount for each user (parallel, but be mindful of rate limits)
         const playcounts = await Promise.all(
           rows.map(async (row) => {
@@ -170,6 +189,11 @@ module.exports = (app) => {
             text: {
               type: 'mrkdwn',
               text: `📀 *Top 10 for* _${album}_ *by* _${artist}_:`,
+            },
+            accessory: {
+              type: 'image',
+              image_url: albumImage,
+              alt_text: `${album} by ${artist} cover`,
             },
           },
           { type: 'divider' },

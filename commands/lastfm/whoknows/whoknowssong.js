@@ -124,6 +124,27 @@ module.exports = (app) => {
           });
         }
 
+        // Fetch song info to get the cover image
+        let songImage = null;
+        try {
+          const songInfoRes = await axios.get(
+            `https://ws.audioscrobbler.com/2.0/?method=track.getInfo&artist=${encodeURIComponent(
+              artist
+            )}&track=${encodeURIComponent(
+              song
+            )}&api_key=${LASTFM_API_KEY}&format=json`
+          );
+          const trackInfo = songInfoRes.data.track;
+          // Prefer track image, fallback to album image, then placeholder
+          songImage =
+            trackInfo?.album?.image?.find((i) => i.size === 'extralarge')?.['#text'] ||
+            trackInfo?.album?.image?.pop()?.['#text'] ||
+            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+        } catch (e) {
+          console.warn('Failed to fetch song/album cover:', e.message);
+          songImage = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+        }
+
         // Fetch playcount for each user (parallel, but be mindful of rate limits)
         const playcounts = await Promise.all(
           rows.map(async (row) => {
@@ -164,6 +185,11 @@ module.exports = (app) => {
             text: {
               type: 'mrkdwn',
               text: `🎵 *Top 10 for* _${song}_ *by* _${artist}_:`,
+            },
+            accessory: {
+              type: 'image',
+              image_url: songImage,
+              alt_text: `${song} by ${artist} cover`,
             },
           },
           { type: 'divider' },

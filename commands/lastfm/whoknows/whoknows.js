@@ -84,6 +84,23 @@ module.exports = (app) => {
           });
         }
 
+        // Fetch artist info to get the image
+        let artistImage = null;
+        try {
+          const artistInfoRes = await axios.get(
+            `https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${encodeURIComponent(
+              artist
+            )}&api_key=${LASTFM_API_KEY}&format=json`
+          );
+
+          const artistInfo = artistInfoRes.data.artist;
+          artistImage = artistInfo?.image?.find((i) => i.size === 'extralarge')?.['#text'] ||
+            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+        } catch (e) {
+          console.warn('Failed to fetch artist image:', e.message);
+          artistImage = 'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+        }
+
         // Fetch playcount for each user (parallel, but be mindful of rate limits)
         const playcounts = await Promise.all(
           rows.map(async (row) => {
@@ -115,6 +132,11 @@ module.exports = (app) => {
             text: {
               type: 'mrkdwn',
               text: `:trophy: *Top 10 for* _${artist}_:`,
+            },
+            accessory: {
+              type: 'image',
+              image_url: artistImage,
+              alt_text: `${artist} image`,
             },
           },
           { type: 'divider' },
