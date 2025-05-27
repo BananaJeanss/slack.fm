@@ -1,5 +1,5 @@
-const sqlite3 = require("sqlite3").verbose();
-const db = new sqlite3.Database("./slackfm.db");
+const sqlite3 = require('sqlite3').verbose();
+const db = new sqlite3.Database('./slackfm.db');
 
 db.serialize(() => {
   db.run(`
@@ -42,7 +42,7 @@ db.serialize(() => {
     `CREATE INDEX IF NOT EXISTS idx_roast_time ON roast_usage(slack_user_id, timestamp)`
   );
 
-  db.run("PRAGMA journal_mode=WAL;");
+  db.run('PRAGMA journal_mode=WAL;');
 });
 
 module.exports = db;

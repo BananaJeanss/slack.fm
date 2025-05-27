@@ -1,12 +1,12 @@
-require("dotenv").config();
-const axios = require("axios");
-const db = require("../../utils/db");
-const { WebClient } = require("@slack/web-api");
+require('dotenv').config();
+const axios = require('axios');
+const db = require('../../utils/db');
+const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/nowplaying", async ({ ack, respond, command }) => {
+  app.command('/nowplaying', async ({ ack, respond, command }) => {
     await ack();
 
     let input = command.text.trim();
@@ -19,7 +19,7 @@ module.exports = (app) => {
         targetSlackId = mentionMatch[1];
       } else {
         // Fall back to username/display name
-        input = input.replace(/^@/, "");
+        input = input.replace(/^@/, '');
         try {
           const users = await web.users.list();
           const match = users.members.find(
@@ -32,39 +32,39 @@ module.exports = (app) => {
             targetSlackId = match.id;
           } else {
             return await respond({
-              response_type: "ephemeral",
-              text: "⚠️ Could not find a Slack user with that username.",
+              response_type: 'ephemeral',
+              text: '⚠️ Could not find a Slack user with that username.',
             });
           }
         } catch (e) {
-          console.error("Slack API error:", e);
+          console.error('Slack API error:', e);
           return await respond({
-            response_type: "ephemeral",
-            text: ":x: Failed to look up Slack user. Try again later.",
+            response_type: 'ephemeral',
+            text: ':x: Failed to look up Slack user. Try again later.',
           });
         }
       }
     }
 
     db.get(
-      "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
+      'SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?',
       [targetSlackId, command.team_id],
       async (err, row) => {
         if (err) {
           await respond({
-            response_type: "ephemeral",
-            text: ":x: Database error. Please try again later.",
+            response_type: 'ephemeral',
+            text: ':x: Database error. Please try again later.',
           });
           return;
         }
 
         if (!row) {
           await respond({
-            response_type: "ephemeral",
+            response_type: 'ephemeral',
             text:
               targetSlackId === command.user_id
                 ? "⚠️ You haven't linked your Last.fm account. Use `/link` to connect."
-                : "⚠️ That user hasn’t linked their Last.fm account.",
+                : '⚠️ That user hasn’t linked their Last.fm account.',
           });
           return;
         }
@@ -80,22 +80,22 @@ module.exports = (app) => {
           const track = data.recenttracks.track[0];
           if (!track) {
             await respond({
-              response_type: "ephemeral",
+              response_type: 'ephemeral',
               text: `No recent tracks found for *${username}*.`,
             });
             return;
           }
 
           const userTag = `<@${targetSlackId}>`;
-          const isNowPlaying = track["@attr"]?.nowplaying === "true";
-          const artist = track.artist["#text"];
+          const isNowPlaying = track['@attr']?.nowplaying === 'true';
+          const artist = track.artist['#text'];
           const song = track.name;
-          const album = track.album["#text"];
+          const album = track.album['#text'];
           const trackUrl = track.url;
           const fallbackAlbumImage =
-            "https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png";
+            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
           const albumImage =
-            track.image?.find((img) => img.size === "extralarge")?.["#text"] ||
+            track.image?.find((img) => img.size === 'extralarge')?.['#text'] ||
             fallbackAlbumImage;
 
           let userPlaycount = null;
@@ -109,7 +109,7 @@ module.exports = (app) => {
             );
             userPlaycount = infoRes.data.track?.userplaycount ?? null;
           } catch (e) {
-            console.warn("Could not fetch userplaycount for track:", e.message);
+            console.warn('Could not fetch userplaycount for track:', e.message);
           }
 
           let messageHeader = isNowPlaying
@@ -122,14 +122,14 @@ module.exports = (app) => {
 
           const blocks = [
             {
-              type: "section",
+              type: 'section',
               text: {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: messageHeader,
               },
               ...(albumImage && {
                 accessory: {
-                  type: "image",
+                  type: 'image',
                   image_url: albumImage,
                   alt_text: `Album cover for ${album}`,
                 },
@@ -139,10 +139,10 @@ module.exports = (app) => {
 
           if (album) {
             blocks.push({
-              type: "context",
+              type: 'context',
               elements: [
                 {
-                  type: "mrkdwn",
+                  type: 'mrkdwn',
                   text: `_Album: ${album}_`,
                 },
               ],
@@ -151,31 +151,31 @@ module.exports = (app) => {
 
           if (trackUrl) {
             blocks.push({
-              type: "actions",
+              type: 'actions',
               elements: [
                 {
-                  type: "button",
+                  type: 'button',
                   text: {
-                    type: "plain_text",
-                    text: "View on Last.fm",
+                    type: 'plain_text',
+                    text: 'View on Last.fm',
                     emoji: true,
                   },
                   url: trackUrl,
-                  action_id: "view_lastfm",
+                  action_id: 'view_lastfm',
                 },
               ],
             });
           }
 
           await respond({
-            response_type: "in_channel",
+            response_type: 'in_channel',
             blocks,
           });
         } catch (e) {
-          console.error("Last.fm fetch error:", e);
+          console.error('Last.fm fetch error:', e);
           await respond({
-            response_type: "ephemeral",
-            text: ":warning: Failed to fetch now playing track from Last.fm.",
+            response_type: 'ephemeral',
+            text: ':warning: Failed to fetch now playing track from Last.fm.',
           });
         }
       }

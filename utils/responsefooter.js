@@ -4,13 +4,13 @@ module.exports = function respondWithFooter(respond, command) {
     // Only add to block responses
     if (payload && payload.blocks && Array.isArray(payload.blocks)) {
       payload.blocks.push(
-        { type: "divider" },
+        { type: 'divider' },
         {
-          type: "context",
+          type: 'context',
           elements: [
             {
-              type: "mrkdwn",
-              text: `Command run by <@${command.user_id}> at <!date^${Math.floor(Date.now()/1000)}^{date_short_pretty} {time}|${new Date().toLocaleString()}>`,
+              type: 'mrkdwn',
+              text: `Command run by <@${command.user_id}> at <!date^${Math.floor(Date.now() / 1000)}^{date_short_pretty} {time}|${new Date().toLocaleString()}>`,
             },
           ],
         }

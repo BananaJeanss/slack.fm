@@ -1,5 +1,5 @@
 module.exports = (app) => {
-  app.command("/about", async ({ ack, respond }) => {
+  app.command('/about', async ({ ack, respond }) => {
     await ack();
 
     const uptime = process.uptime();
@@ -25,7 +25,7 @@ _View <https://github.com/bananajeanss/slack.fm/commands.md|commands.md> for all
         `;
 
     await respond({
-      response_type: "ephemeral",
+      response_type: 'ephemeral',
       text: aboutText,
     });
   });

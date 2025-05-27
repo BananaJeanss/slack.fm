@@ -1,16 +1,16 @@
-require("dotenv").config();
-const axios = require("axios");
-const db = require("../../utils/db");
+require('dotenv').config();
+const axios = require('axios');
+const db = require('../../utils/db');
 
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/compliment", async ({ ack, respond, command }) => {
+  app.command('/compliment', async ({ ack, respond, command }) => {
     await ack();
 
     // Step 1: Parse input
     let targetSlackId = command.user_id;
-    const input = (command.text || "").trim();
+    const input = (command.text || '').trim();
 
     const mentionMatch = input.match(/^<@([UW][A-Z0-9]+)(\|[^>]+)?>$/);
     if (mentionMatch) {
@@ -32,29 +32,29 @@ module.exports = (app) => {
       async (err, counts) => {
         if (err)
           return respond({
-            text: ":x: Rate limit check failed.",
-            response_type: "ephemeral",
+            text: ':x: Rate limit check failed.',
+            response_type: 'ephemeral',
           });
 
         if (counts.count_hour >= 3 || counts.count_day >= 10) {
           return respond({
-            response_type: "ephemeral",
+            response_type: 'ephemeral',
             text: `🚫 You've reached your roast/compliment limit.\nHourly: ${counts.count_hour}/3, Daily: ${counts.count_day}/10`,
           });
         }
 
         // Step 3: Get Last.fm username
         db.get(
-          "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
+          'SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?',
           [targetSlackId, command.team_id],
           async (err, row) => {
             if (err || !row) {
               return respond({
-                response_type: "ephemeral",
+                response_type: 'ephemeral',
                 text:
                   targetSlackId === command.user_id
                     ? "⚠️ You haven't linked your Last.fm. Use `/link`."
-                    : "⚠️ That user hasn’t linked their Last.fm.",
+                    : '⚠️ That user hasn’t linked their Last.fm.',
               });
             }
 
@@ -86,19 +86,19 @@ module.exports = (app) => {
                 topTracksArray.length === 0
               ) {
                 return respond({
-                  response_type: "ephemeral",
+                  response_type: 'ephemeral',
                   text: "⚠️ Not enough recent listening data found to compliment. Try again after you've scrobbled more!",
                 });
               }
 
               // then format the strings
-              const topArtists = topArtistsArray.map((a) => a.name).join(", ");
+              const topArtists = topArtistsArray.map((a) => a.name).join(', ');
               const topAlbums = topAlbumsArray
                 .map((a) => `${a.name} by ${a.artist.name}`)
-                .join(", ");
+                .join(', ');
               const topTracks = topTracksArray
                 .map((t) => `${t.name} by ${t.artist.name}`)
-                .join(", ");
+                .join(', ');
 
               const prompt = `
 You're a warm, thoughtful music lover with a deep appreciation for great taste — and you're here to **gently hype up** someone's music preferences based on their top 10 artists, albums, and tracks.
@@ -113,14 +113,13 @@ Deliver a heartwarming, sincere celebration of their music taste. Be poetic, kin
 
               // Step 5: Send to ai.hackclub.com
               const aiResponse = await axios.post(
-                "https://ai.hackclub.com/chat/completions",
+                'https://ai.hackclub.com/chat/completions',
                 {
-                  messages: [{ role: "user", content: prompt }],
+                  messages: [{ role: 'user', content: prompt }],
                 }
               );
 
               const compliment = aiResponse.data.choices?.[0]?.message?.content;
-
 
               // Step 6: Record compliment usage
               db.run(
@@ -130,33 +129,33 @@ Deliver a heartwarming, sincere celebration of their music taste. Be poetic, kin
 
               // Step 7: Respond
               await respond({
-                response_type: "in_channel",
+                response_type: 'in_channel',
                 blocks: [
                   {
-                    type: "section",
+                    type: 'section',
                     text: {
-                      type: "mrkdwn",
+                      type: 'mrkdwn',
                       text: `🌟 *Here's a compliment for <@${targetSlackId}>'s music taste:*`,
                     },
                   },
                   {
-                    type: "divider",
+                    type: 'divider',
                   },
                   {
-                    type: "section",
+                    type: 'section',
                     text: {
-                      type: "mrkdwn",
+                      type: 'mrkdwn',
                       text:
                         compliment.length > 3000
-                          ? compliment.slice(0, 2997) + "..."
+                          ? compliment.slice(0, 2997) + '...'
                           : compliment,
                     },
                   },
                   {
-                    type: "context",
+                    type: 'context',
                     elements: [
                       {
-                        type: "mrkdwn",
+                        type: 'mrkdwn',
                         text: `Powered by ai.hackclub.com`,
                       },
                     ],
@@ -164,10 +163,10 @@ Deliver a heartwarming, sincere celebration of their music taste. Be poetic, kin
                 ],
               });
             } catch (e) {
-              console.error("Compliment fetch error:", e);
+              console.error('Compliment fetch error:', e);
               respond({
-                response_type: "ephemeral",
-                text: ":x: Failed to generate compliment.",
+                response_type: 'ephemeral',
+                text: ':x: Failed to generate compliment.',
               });
             }
           }

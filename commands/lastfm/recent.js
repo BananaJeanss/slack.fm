@@ -1,12 +1,12 @@
-require("dotenv").config();
-const axios = require("axios");
-const db = require("../../utils/db");
-const { WebClient } = require("@slack/web-api");
+require('dotenv').config();
+const axios = require('axios');
+const db = require('../../utils/db');
+const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/recent", async ({ ack, respond, command }) => {
+  app.command('/recent', async ({ ack, respond, command }) => {
     await ack();
 
     let input = command.text.trim();
@@ -18,7 +18,7 @@ module.exports = (app) => {
       if (mention) {
         targetSlackId = mention[1];
       } else {
-        input = input.replace(/^@/, "");
+        input = input.replace(/^@/, '');
         try {
           const users = await web.users.list();
           const match = users.members.find(
@@ -28,38 +28,38 @@ module.exports = (app) => {
           );
           if (!match) {
             return respond({
-              response_type: "ephemeral",
-              text: "⚠️ Could not find that user.",
+              response_type: 'ephemeral',
+              text: '⚠️ Could not find that user.',
             });
           }
           targetSlackId = match.id;
         } catch (e) {
           console.error(e);
           return respond({
-            response_type: "ephemeral",
-            text: "⚠️ Slack API error looking up user.",
+            response_type: 'ephemeral',
+            text: '⚠️ Slack API error looking up user.',
           });
         }
       }
     }
 
     db.get(
-      "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
+      'SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?',
       [targetSlackId, command.team_id],
       async (err, row) => {
         if (err) {
           console.error(err);
           return respond({
-            response_type: "ephemeral",
-            text: "❌ Database error.",
+            response_type: 'ephemeral',
+            text: '❌ Database error.',
           });
         }
         if (!row) {
           const msg =
             targetSlackId === command.user_id
-              ? "⚠️ You haven’t linked your Last.fm profile. Use `/link` first!"
-              : "⚠️ That user hasn’t linked Last.fm.";
-          return respond({ response_type: "ephemeral", text: msg });
+              ? '⚠️ You haven’t linked your Last.fm profile. Use `/link` first!'
+              : '⚠️ That user hasn’t linked Last.fm.';
+          return respond({ response_type: 'ephemeral', text: msg });
         }
 
         const username = row.lastfm_username;
@@ -74,46 +74,46 @@ module.exports = (app) => {
           const tracks = recent.data.recenttracks.track;
           if (!tracks || tracks.length === 0) {
             return respond({
-              response_type: "ephemeral",
+              response_type: 'ephemeral',
               text: `No recent tracks found for *${username}*.`,
             });
           }
 
           const blocks = [
             {
-              type: "section",
+              type: 'section',
               text: {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: `🎧 *5 Recent Tracks by* <@${targetSlackId}>`,
               },
             },
-            { type: "divider" },
+            { type: 'divider' },
           ];
 
           let count = 0;
           for (const track of tracks) {
             if (count >= 5) break;
 
-            const artist = track.artist["#text"];
+            const artist = track.artist['#text'];
             const title = track.name;
-            const album = track.album["#text"] || "";
+            const album = track.album['#text'] || '';
             const timestamp = track.date?.uts
               ? `🕒 ${new Date(track.date.uts * 1000).toUTCString()}`
-              : "▶️ *Now Playing*";
-            const coverImage = track.image?.[2]?.["#text"];
+              : '▶️ *Now Playing*';
+            const coverImage = track.image?.[2]?.['#text'];
 
             blocks.push({
-              type: "section",
+              type: 'section',
               text: {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: `*${count + 1}. ${artist} –* ${title} ${
-                  album ? `• _${album}_` : ""
+                  album ? `• _${album}_` : ''
                 }\n${timestamp}`,
               },
               ...(count === 0 && coverImage
                 ? {
                     accessory: {
-                      type: "image",
+                      type: 'image',
                       image_url: coverImage,
                       alt_text: title,
                     },
@@ -123,12 +123,12 @@ module.exports = (app) => {
             count++;
           }
 
-          await respond({ response_type: "in_channel", blocks });
+          await respond({ response_type: 'in_channel', blocks });
         } catch (e) {
-          console.error("Last.fm error:", e);
+          console.error('Last.fm error:', e);
           await respond({
-            response_type: "ephemeral",
-            text: "⚠️ Could not fetch recent tracks.",
+            response_type: 'ephemeral',
+            text: '⚠️ Could not fetch recent tracks.',
           });
         }
       }

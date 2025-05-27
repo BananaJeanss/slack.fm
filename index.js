@@ -1,13 +1,13 @@
-const { App } = require("@slack/bolt");
-const express = require("express");
-const dotenv = require("dotenv");
-const fs = require("fs");
-const path = require("path");
-const helmet = require("helmet");
-const rateLimit = require("express-rate-limit");
-const respondWithFooter = require("./utils/responsefooter");
-const validateEnv = require("./utils/validateenv");
-const axios = require("axios");
+const { App } = require('@slack/bolt');
+const express = require('express');
+const dotenv = require('dotenv');
+const fs = require('fs');
+const path = require('path');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
+const respondWithFooter = require('./utils/responsefooter');
+const validateEnv = require('./utils/validateenv');
+const axios = require('axios');
 
 dotenv.config();
 
@@ -15,13 +15,18 @@ dotenv.config();
 validateEnv();
 
 // axios timeout
-axios.defaults.timeout = 10000; // 10 seconds 
+axios.defaults.timeout = 10000; // 10 seconds
 
 // Initialize Express app
 const expressApp = express();
 expressApp.set('trust proxy', 1); // Trust first proxy
 expressApp.use(helmet());
-expressApp.disable("x-powered-by"); 
+expressApp.disable('x-powered-by');
+expressApp.use(
+  helmet.contentSecurityPolicy({
+    directives: { defaultSrc: ["'self'"], imgSrc: ['* data:'] },
+  })
+);
 // ratelimits
 const ratelimiter = rateLimit({
   windowMs: 60 * 1000, // 1 minute
@@ -52,11 +57,11 @@ app.command = (commandName, handler) => {
     if (commandCooldowns.has(commandKey)) {
       const lastUsed = commandCooldowns.get(commandKey);
       const timeLeft = cooldownTime - (now - lastUsed);
-      
+
       if (timeLeft > 0) {
         return args.respond({
-          response_type: "ephemeral",
-          text: `⏱️ Please wait ${Math.ceil(timeLeft / 1000)} second(s) before using ${commandName} again.`
+          response_type: 'ephemeral',
+          text: `⏱️ Please wait ${Math.ceil(timeLeft / 1000)} second(s) before using ${commandName} again.`,
         });
       }
     }
@@ -66,6 +71,23 @@ app.command = (commandName, handler) => {
     await handler({ ...args, respond: wrappedRespond });
   });
 };
+
+function clearCooldowns() {
+  const now = Date.now();
+  commandCooldowns.forEach((lastUsed, key) => {
+    if (now - lastUsed > 60 * 1000 * 15) {
+      // Clear cooldowns older than 15 minutes
+      commandCooldowns.delete(key);
+    }
+  });
+}
+
+setInterval(
+  () => {
+    clearCooldowns();
+  },
+  60 * 1000 * 15
+); // Clear cooldowns every 15 minutes
 
 // Parse request bodies
 expressApp.use(express.json());
@@ -77,10 +99,10 @@ const loadCommands = (dir) => {
     const fullPath = path.join(dir, file);
     if (fs.lstatSync(fullPath).isDirectory()) {
       loadCommands(fullPath);
-    } else if (file.endsWith(".js")) {
+    } else if (file.endsWith('.js')) {
       try {
         const command = require(fullPath);
-        if (typeof command === "function") {
+        if (typeof command === 'function') {
           command(app);
         } else {
           console.warn(`[COMMAND] Skipped (not a function): ${fullPath}`);
@@ -91,25 +113,22 @@ const loadCommands = (dir) => {
     }
   });
 };
-loadCommands(path.join(__dirname, "commands"));
-
+loadCommands(path.join(__dirname, 'commands'));
 
 // linking setup
-const viewsPath = path.join(__dirname, "routes", "views");
+const viewsPath = path.join(__dirname, 'routes', 'views');
 expressApp.use('/lastfm', express.static(viewsPath));
 expressApp.use('/lastfm', require('./routes/lastfm'));
 
 // Start the Express server
 const PORT = process.env.PORT || 3000;
-expressApp.listen(PORT, '0.0.0.0', () =>
-  console.log(`Express up on ${PORT}`)
-);
+expressApp.listen(PORT, '0.0.0.0', () => console.log(`Express up on ${PORT}`));
 
 // DB Cleanup
-require("./utils/dbcleanup");
+require('./utils/dbcleanup');
 
 // Start the Slack app
 (async () => {
   await app.start();
-  app.logger.info("⚡️ Slack.fm is running!");
+  app.logger.info('⚡️ Slack.fm is running!');
 })();

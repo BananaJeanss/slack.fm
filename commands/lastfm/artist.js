@@ -1,12 +1,12 @@
-require("dotenv").config();
-const axios = require("axios");
-const db = require("../../utils/db");
-const { WebClient } = require("@slack/web-api");
+require('dotenv').config();
+const axios = require('axios');
+const db = require('../../utils/db');
+const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/artist", async ({ ack, respond, command }) => {
+  app.command('/artist', async ({ ack, respond, command }) => {
     await ack();
 
     let input = command.text.trim();
@@ -17,7 +17,7 @@ module.exports = (app) => {
       if (mention) {
         targetSlackId = mention[1];
       } else {
-        input = input.replace(/^@/, "");
+        input = input.replace(/^@/, '');
         try {
           const users = await web.users.list();
           const match = users.members.find(
@@ -27,38 +27,38 @@ module.exports = (app) => {
           );
           if (!match) {
             return respond({
-              response_type: "ephemeral",
-              text: "⚠️ Could not find that user.",
+              response_type: 'ephemeral',
+              text: '⚠️ Could not find that user.',
             });
           }
           targetSlackId = match.id;
         } catch (e) {
           console.error(e);
           return respond({
-            response_type: "ephemeral",
-            text: "⚠️ Slack API error looking up user.",
+            response_type: 'ephemeral',
+            text: '⚠️ Slack API error looking up user.',
           });
         }
       }
     }
 
     db.get(
-      "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
+      'SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?',
       [targetSlackId, command.team_id],
       async (err, row) => {
         if (err) {
           console.error(err);
           return respond({
-            response_type: "ephemeral",
-            text: "❌ Database error.",
+            response_type: 'ephemeral',
+            text: '❌ Database error.',
           });
         }
         if (!row) {
           const msg =
             targetSlackId === command.user_id
-              ? "⚠️ You haven’t linked your Last.fm profile. Use `/link` first!"
-              : "⚠️ That user hasn’t linked Last.fm.";
-          return respond({ response_type: "ephemeral", text: msg });
+              ? '⚠️ You haven’t linked your Last.fm profile. Use `/link` first!'
+              : '⚠️ That user hasn’t linked Last.fm.';
+          return respond({ response_type: 'ephemeral', text: msg });
         }
 
         const username = row.lastfm_username;
@@ -71,12 +71,12 @@ module.exports = (app) => {
           const track = recent.data.recenttracks.track[0];
           if (!track) {
             return respond({
-              response_type: "ephemeral",
+              response_type: 'ephemeral',
               text: `No scrobbles for *${username}*.`,
             });
           }
 
-          const artist = track.artist["#text"];
+          const artist = track.artist['#text'];
 
           const infoRes = await axios.get(
             `https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${encodeURIComponent(
@@ -91,73 +91,80 @@ module.exports = (app) => {
           const globalPlays = info.stats.playcount;
           const userPlays = info.stats.userplaycount || 0;
           const summary = info.bio?.summary
-            ? info.bio.summary.replace(/<a href=".*">Read more on Last.fm<\/a>/, "").trim()
-            : "No summary available.";
-          const image = info.image.find((i) => i.size === "extralarge")?.["#text"];
+            ? info.bio.summary
+                .replace(/<a href=".*">Read more on Last.fm<\/a>/, '')
+                .trim()
+            : 'No summary available.';
+          const image = info.image.find((i) => i.size === 'extralarge')?.[
+            '#text'
+          ];
 
           let summaryText = summary;
           if (summaryText.length > 600) {
-            summaryText = summaryText.slice(0, 590) + "…";
+            summaryText = summaryText.slice(0, 590) + '…';
           }
 
           const blocks = [
             {
-              type: "section",
+              type: 'section',
               text: {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: `🎤 *Last played artist by* <@${targetSlackId}>`,
               },
             },
             {
-              type: "section",
+              type: 'section',
               text: {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: `*Artist:* ${info.name}`,
               },
               accessory: image
-                ? { type: "image", image_url: image, alt_text: info.name }
+                ? { type: 'image', image_url: image, alt_text: info.name }
                 : undefined,
             },
-            { type: "divider" },
+            { type: 'divider' },
             {
-              type: "section",
+              type: 'section',
               fields: [
-                { type: "mrkdwn", text: `*Listeners:*\n${listeners}` },
-                { type: "mrkdwn", text: `*Global plays:*\n${globalPlays}` },
-                { type: "mrkdwn", text: `*<@${targetSlackId}> plays:*\n${userPlays}` },
+                { type: 'mrkdwn', text: `*Listeners:*\n${listeners}` },
+                { type: 'mrkdwn', text: `*Global plays:*\n${globalPlays}` },
+                {
+                  type: 'mrkdwn',
+                  text: `*<@${targetSlackId}> plays:*\n${userPlays}`,
+                },
               ],
             },
-            { type: "divider" },
+            { type: 'divider' },
             {
-              type: "section",
+              type: 'section',
               text: {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: `*Summary:*\n${summaryText}`,
               },
             },
             {
-              type: "actions",
+              type: 'actions',
               elements: [
                 {
-                  type: "button",
+                  type: 'button',
                   text: {
-                    type: "plain_text",
-                    text: "View on Last.fm",
+                    type: 'plain_text',
+                    text: 'View on Last.fm',
                     emoji: true,
                   },
                   url: info.url,
-                  action_id: "view_artist_on_lastfm",
+                  action_id: 'view_artist_on_lastfm',
                 },
               ],
             },
           ];
 
-          await respond({ response_type: "in_channel", blocks });
+          await respond({ response_type: 'in_channel', blocks });
         } catch (e) {
-          console.error("Last.fm error:", e);
+          console.error('Last.fm error:', e);
           await respond({
-            response_type: "ephemeral",
-            text: "⚠️ Could not fetch artist info.",
+            response_type: 'ephemeral',
+            text: '⚠️ Could not fetch artist info.',
           });
         }
       }

@@ -1,14 +1,14 @@
-require("dotenv").config();
-const axios = require("axios");
-const db = require("../../utils/db");
+require('dotenv').config();
+const axios = require('axios');
+const db = require('../../utils/db');
 
-const { WebClient } = require("@slack/web-api");
+const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/profile", async ({ ack, respond, command }) => {
+  app.command('/profile', async ({ ack, respond, command }) => {
     await ack();
 
     let input = command.text.trim();
@@ -21,7 +21,7 @@ module.exports = (app) => {
         targetSlackId = mentionMatch[1];
       } else {
         // Fall back to username/display name lookup
-        input = input.replace(/^@/, ""); // remove leading @ if present
+        input = input.replace(/^@/, ''); // remove leading @ if present
         try {
           const users = await web.users.list();
           const match = users.members.find(
@@ -34,39 +34,39 @@ module.exports = (app) => {
             targetSlackId = match.id;
           } else {
             return await respond({
-              response_type: "ephemeral",
-              text: "⚠️ Could not find a Slack user with that username.",
+              response_type: 'ephemeral',
+              text: '⚠️ Could not find a Slack user with that username.',
             });
           }
         } catch (e) {
-          console.error("Slack API error:", e);
+          console.error('Slack API error:', e);
           return await respond({
-            response_type: "ephemeral",
-            text: ":x: Failed to look up Slack user. Try again later.",
+            response_type: 'ephemeral',
+            text: ':x: Failed to look up Slack user. Try again later.',
           });
         }
       }
     }
 
     db.get(
-      "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
+      'SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?',
       [targetSlackId, command.team_id],
       async (err, row) => {
         if (err) {
           await respond({
-            response_type: "ephemeral",
-            text: ":x: Database error. Please try again later.",
+            response_type: 'ephemeral',
+            text: ':x: Database error. Please try again later.',
           });
           return;
         }
 
         if (!row) {
           await respond({
-            response_type: "ephemeral",
+            response_type: 'ephemeral',
             text:
               targetSlackId === command.user_id
                 ? "⚠️ You haven't linked your Last.fm account. Use `/link` to connect."
-                : "⚠️ That user hasn’t linked their Last.fm account.",
+                : '⚠️ That user hasn’t linked their Last.fm account.',
           });
           return;
         }
@@ -84,27 +84,27 @@ module.exports = (app) => {
 
           const blocks = [
             {
-              type: "section",
+              type: 'section',
               text: {
-                type: "mrkdwn",
+                type: 'mrkdwn',
                 text: `🎧 *${tag}'s Last.fm profile:*\n*Username:* ${profile.name}\n*Scrobbles:* ${profile.playcount}\n*Registered:* ${new Date(
                   parseInt(profile.registered.unixtime) * 1000
                 ).toLocaleDateString()}`,
               },
               accessory: {
-                type: "image",
-                image_url: profile.image?.[3]?.["#text"], // large avatar
+                type: 'image',
+                image_url: profile.image?.[3]?.['#text'], // large avatar
                 alt_text: `${profile.name}'s avatar`,
               },
             },
             {
-              type: "actions",
+              type: 'actions',
               elements: [
                 {
-                  type: "button",
+                  type: 'button',
                   text: {
-                    type: "plain_text",
-                    text: "View Last.fm Profile",
+                    type: 'plain_text',
+                    text: 'View Last.fm Profile',
                   },
                   url: profile.url,
                 },
@@ -113,13 +113,13 @@ module.exports = (app) => {
           ];
 
           await respond({
-            response_type: "in_channel",
+            response_type: 'in_channel',
             blocks,
           });
         } catch (e) {
           await respond({
-            response_type: "ephemeral",
-            text: ":warning: Failed to fetch Last.fm profile.",
+            response_type: 'ephemeral',
+            text: ':warning: Failed to fetch Last.fm profile.',
           });
         }
       }

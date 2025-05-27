@@ -1,32 +1,32 @@
-require("dotenv").config();
-const axios = require("axios");
-const db = require("../../../utils/db");
-const { WebClient } = require("@slack/web-api");
+require('dotenv').config();
+const axios = require('axios');
+const db = require('../../../utils/db');
+const { WebClient } = require('@slack/web-api');
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 module.exports = (app) => {
-  app.command("/whoknowsalbum", async ({ ack, respond, command }) => {
+  app.command('/whoknowsalbum', async ({ ack, respond, command }) => {
     await ack();
 
     let albumQuery = command.text.trim();
     let targetSlackId = command.user_id;
-    let artist = "";
-    let album = "";
+    let artist = '';
+    let album = '';
 
     // If no album provided, get last played album for the user
     if (!albumQuery) {
       // Get user's lastfm username
       const row = await new Promise((resolve) =>
         db.get(
-          "SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?",
+          'SELECT lastfm_username FROM user_links WHERE slack_user_id = ? AND workspace_id = ?',
           [targetSlackId, command.team_id],
           (err, row) => resolve(row)
         )
       );
       if (!row) {
         return respond({
-          response_type: "ephemeral",
+          response_type: 'ephemeral',
           text: "⚠️ You haven't linked your Last.fm profile. Use `/link` first!",
         });
       }
@@ -40,30 +40,30 @@ module.exports = (app) => {
         const track = recent.data.recenttracks.track[0];
         if (!track) {
           return respond({
-            response_type: "ephemeral",
-            text: "⚠️ No recent tracks found.",
+            response_type: 'ephemeral',
+            text: '⚠️ No recent tracks found.',
           });
         }
-        artist = track.artist["#text"];
-        album = track.album["#text"];
+        artist = track.artist['#text'];
+        album = track.album['#text'];
         if (!album) {
           return respond({
-            response_type: "ephemeral",
+            response_type: 'ephemeral',
             text: "⚠️ Your last played track doesn't have album information.",
           });
         }
       } catch (e) {
         return respond({
-          response_type: "ephemeral",
-          text: "⚠️ Could not fetch your last played album.",
+          response_type: 'ephemeral',
+          text: '⚠️ Could not fetch your last played album.',
         });
       }
     } else {
       // Parse input - support both "album" and "artist - album" formats
-      if (albumQuery.includes(" - ")) {
-        const parts = albumQuery.split(" - ");
+      if (albumQuery.includes(' - ')) {
+        const parts = albumQuery.split(' - ');
         artist = parts[0].trim();
-        album = parts.slice(1).join(" - ").trim();
+        album = parts.slice(1).join(' - ').trim();
       } else {
         // Just album name, try to search
         try {
@@ -72,20 +72,20 @@ module.exports = (app) => {
               albumQuery
             )}&api_key=${LASTFM_API_KEY}&format=json&limit=1`
           );
-          
+
           const searchResult = searchRes.data.results?.albummatches?.album?.[0];
           if (searchResult) {
             artist = searchResult.artist;
             album = searchResult.name;
           } else {
             return respond({
-              response_type: "ephemeral",
+              response_type: 'ephemeral',
               text: `⚠️ No album found matching "${albumQuery}". Try using "Artist - Album" format.`,
             });
           }
         } catch (e) {
           return respond({
-            response_type: "ephemeral",
+            response_type: 'ephemeral',
             text: `⚠️ Could not search for album "${albumQuery}". Try using "Artist - Album" format.`,
           });
         }
@@ -100,20 +100,20 @@ module.exports = (app) => {
             album
           )}&api_key=${LASTFM_API_KEY}&format=json`
         );
-        
+
         if (verifyRes.data.album) {
           // Use the properly formatted names from Last.fm
           artist = verifyRes.data.album.artist;
           album = verifyRes.data.album.name;
         } else {
           return respond({
-            response_type: "ephemeral",
+            response_type: 'ephemeral',
             text: `⚠️ Album "${album}" by "${artist}" not found. Try a different search term.`,
           });
         }
       } catch (e) {
         return respond({
-          response_type: "ephemeral",
+          response_type: 'ephemeral',
           text: `⚠️ Album "${album}" by "${artist}" not found. Try a different search term.`,
         });
       }
@@ -121,13 +121,13 @@ module.exports = (app) => {
 
     // Get all linked users in this workspace
     db.all(
-      "SELECT slack_user_id, lastfm_username FROM user_links WHERE workspace_id = ?",
+      'SELECT slack_user_id, lastfm_username FROM user_links WHERE workspace_id = ?',
       [command.team_id],
       async (err, rows) => {
         if (err || !rows || rows.length === 0) {
           return respond({
-            response_type: "ephemeral",
-            text: "⚠️ No linked users found in this workspace.",
+            response_type: 'ephemeral',
+            text: '⚠️ No linked users found in this workspace.',
           });
         }
 
@@ -144,7 +144,9 @@ module.exports = (app) => {
                   row.lastfm_username
                 )}&api_key=${LASTFM_API_KEY}&format=json`
               );
-              const userplaycount = parseInt(res.data.album?.userplaycount || 0);
+              const userplaycount = parseInt(
+                res.data.album?.userplaycount || 0
+              );
               return { slack_user_id: row.slack_user_id, userplaycount };
             } catch {
               return { slack_user_id: row.slack_user_id, userplaycount: 0 };
@@ -163,21 +165,21 @@ module.exports = (app) => {
         // Prepare leaderboard
         const blocks = [
           {
-            type: "section",
+            type: 'section',
             text: {
-              type: "mrkdwn",
+              type: 'mrkdwn',
               text: `📀 *Top 10 for* _${album}_ *by* _${artist}_:`,
             },
           },
-          { type: "divider" },
+          { type: 'divider' },
         ];
 
         for (let i = 0; i < Math.min(10, playcounts.length); i++) {
           const user = playcounts[i];
           blocks.push({
-            type: "section",
+            type: 'section',
             text: {
-              type: "mrkdwn",
+              type: 'mrkdwn',
               text: `*${i + 1}. <@${user.slack_user_id}>* — ${user.userplaycount} plays`,
             },
           });
@@ -185,17 +187,17 @@ module.exports = (app) => {
 
         // If the user isn't in the top 10, show their rank
         if (userIndex >= 10) {
-          blocks.push({ type: "divider" });
+          blocks.push({ type: 'divider' });
           blocks.push({
-            type: "section",
+            type: 'section',
             text: {
-              type: "mrkdwn",
+              type: 'mrkdwn',
               text: `Your rank: *${userIndex + 1}* — ${playcounts[userIndex].userplaycount} plays`,
             },
           });
         }
 
-        await respond({ response_type: "in_channel", blocks });
+        await respond({ response_type: 'in_channel', blocks });
       }
     );
   });

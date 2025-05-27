@@ -1,4 +1,3 @@
-
 <p align="center">
     <img src="assets/slackfm.png" alt="slack.fm logo" width="150"/>
 </p>
@@ -27,25 +26,25 @@ To self-host slack.fm, follow these steps:
 
 1. **Clone the repository:**
 
-    ```bash
-    git clone https://github.com/bananajeanss/slack.fm.git
-    cd slack.fm
-    ```
+   ```bash
+   git clone https://github.com/bananajeanss/slack.fm.git
+   cd slack.fm
+   ```
 
 2. **Install the dependencies:**
 
-    ```bash
-    npm install
-    ```
+   ```bash
+   npm install
+   ```
 
 3. **Create a `.env` file**  
    Copy `.env.example` and fill in the required variables.
 
 4. **Run the app:**
 
-    ```bash
-    node index.js
-    ```
+   ```bash
+   node index.js
+   ```
 
 ## Environment Variables
 
@@ -64,17 +63,17 @@ To self-host slack.fm, follow these steps:
 
 Once the bot is running and added to your Slack workspace, you can use these basic commands to get started:
 
-| Command         | Description                                 |
-|-----------------|---------------------------------------------|
-| `/link`         | Link your Last.fm account                   |
-| `/nowplaying`   | Shows your (or another user’s) current track|
-| `/profile`      | Shows Last.fm profile info                  |
-| `/artist`       | Shows info about your last played artist    |
-| `/album`        | Shows info about your last played album     |
-| `/song`         | Shows info about your last played song      |
-| `/whoknows`     | Shows top listeners for an artist           |
-| `/whoslistening`| Shows who is listening to a track           |
-| `/roast`        | Get roasted for your music taste            |
+| Command          | Description                                  |
+| ---------------- | -------------------------------------------- |
+| `/link`          | Link your Last.fm account                    |
+| `/nowplaying`    | Shows your (or another user’s) current track |
+| `/profile`       | Shows Last.fm profile info                   |
+| `/artist`        | Shows info about your last played artist     |
+| `/album`         | Shows info about your last played album      |
+| `/song`          | Shows info about your last played song       |
+| `/whoknows`      | Shows top listeners for an artist            |
+| `/whoslistening` | Shows who is listening to a track            |
+| `/roast`         | Get roasted for your music taste             |
 
 More commands can be found in the [commands.md](commands.md) file.
 

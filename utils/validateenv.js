@@ -1,7 +1,7 @@
 const validateEnv = () => {
   const requiredEnvVars = [
     'SLACK_CLIENT_ID',
-    'SLACK_CLIENT_SECRET', 
+    'SLACK_CLIENT_SECRET',
     'SLACK_SIGNING_SECRET',
     'SLACK_BOT_TOKEN',
     'SLACK_APP_TOKEN',
@@ -9,17 +9,19 @@ const validateEnv = () => {
     'LASTFM_SHARED_SECRET',
     'LASTFM_CALLBACK_URL',
     'SPOTIFY_CLIENT_ID',
-    'SPOTIFY_CLIENT_SECRET'
+    'SPOTIFY_CLIENT_SECRET',
   ];
 
-  const missing = requiredEnvVars.filter(varName => !process.env[varName]);
-  
+  const missing = requiredEnvVars.filter((varName) => !process.env[varName]);
+
   if (missing.length > 0) {
     console.error('❌ Missing required environment variables:');
-    missing.forEach(varName => {
+    missing.forEach((varName) => {
       console.error(`   - ${varName}`);
     });
-    console.error('\n💡 Please check your .env file and ensure all variables are set.');
+    console.error(
+      '\n💡 Please check your .env file and ensure all variables are set.'
+    );
     console.error('📄 Reference: .env.example\n');
     process.exit(1);
   }
@@ -29,18 +31,18 @@ const validateEnv = () => {
     {
       name: 'SLACK_BOT_TOKEN',
       pattern: /^xoxb-/,
-      message: 'SLACK_BOT_TOKEN should start with "xoxb-"'
+      message: 'SLACK_BOT_TOKEN should start with "xoxb-"',
     },
     {
-      name: 'SLACK_APP_TOKEN', 
+      name: 'SLACK_APP_TOKEN',
       pattern: /^xapp-/,
-      message: 'SLACK_APP_TOKEN should start with "xapp-"'
+      message: 'SLACK_APP_TOKEN should start with "xapp-"',
     },
     {
       name: 'LASTFM_CALLBACK_URL',
       pattern: /^https?:\/\//,
-      message: 'LASTFM_CALLBACK_URL should be a valid URL'
-    }
+      message: 'LASTFM_CALLBACK_URL should be a valid URL',
+    },
   ];
 
   const formatErrors = [];
@@ -52,7 +54,7 @@ const validateEnv = () => {
 
   if (formatErrors.length > 0) {
     console.error('⚠️  Environment variable format warnings:');
-    formatErrors.forEach(error => console.error(error));
+    formatErrors.forEach((error) => console.error(error));
     console.error('');
   }
 
