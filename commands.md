@@ -4,10 +4,10 @@ A comprehensive guide to all slash commands available in slack.fm.
 
 ## Authentication Commands
 
-| Command   | Description                 | Usage     |
-| --------- | --------------------------- | --------- |
-| `/link`   | Link your Last.fm account   | `/link`   |
-| `/unlink` | Unlink your Last.fm account | `/unlink` |
+| Command         | Description                 | Usage     |
+| --------------- | --------------------------- | --------- |
+| `/linklastfm`   | Link your Last.fm account   | `/link`   |
+| `/unlinklastfm` | Unlink your Last.fm account | `/unlink` |
 
 ## Profile & Stats Commands
 
@@ -59,8 +59,9 @@ A comprehensive guide to all slash commands available in slack.fm.
 
 ## Utility Commands
 
-| Command   | Description                           | Usage     |
-| --------- | ------------------------------------- | --------- |
-| `/about`  | Show info about slack.fm              | `/about`  |
-| `/ping`   | Check if the bot is responding        | `/ping`   |
-| `/uptime` | Display how long bot has been running | `/uptime` |
+| Command            | Description                                          | Usage              |
+| ------------------ | ---------------------------------------------------- | ------------------ |
+| `/about`           | Show info about slack.fm                             | `/about`           |
+| `/ping`            | Check if the bot is responding                       | `/ping`            |
+| `/uptime`          | Display how long bot has been running                | `/uptime`          |
+| `/slackfmcommands` | Shows a few basic commands and a link to commands.md | `/slackfmcommands` |

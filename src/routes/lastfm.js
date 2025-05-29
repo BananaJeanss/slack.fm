@@ -3,8 +3,12 @@ import axios from 'axios';
 import md5 from 'md5';
 import db from '../utils/db.js';
 import path from 'path';
+import { fileURLToPath } from 'url';
 
 const router = express.Router();
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 const API_KEY = process.env.LASTFM_API_KEY;
 const API_SECRET = process.env.LASTFM_SHARED_SECRET;

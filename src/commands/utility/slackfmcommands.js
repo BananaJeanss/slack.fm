@@ -1,8 +1,8 @@
 export default function (app) {
-    app.command('/slackfmcommands', async ({ ack, respond }) => {
-        await ack();
+  app.command('/slackfmcommands', async ({ ack, respond }) => {
+    await ack();
 
-        const commandsText = `
+    const commandsText = `
 *🎵 slack.fm Commands*
 
 *Basic Commands:*
@@ -16,9 +16,9 @@ export default function (app) {
 
 View more commands at: <https://github.com/bananajeanss/slack.fm/blob/main/commands.md|commands.md>`;
 
-        await respond({
-            response_type: 'ephemeral',
-            text: commandsText,
-        });
+    await respond({
+      response_type: 'ephemeral',
+      text: commandsText,
     });
+  });
 }

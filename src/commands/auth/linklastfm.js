@@ -1,5 +1,6 @@
 import crypto from 'crypto';
 import db from '../../utils/db.js';
+import querystring from 'querystring';
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 const LASTFM_CALLBACK_URL = process.env.LASTFM_CALLBACK_URL;
 
@@ -23,7 +24,13 @@ export default function (app) {
     });
 
     const state = crypto.randomBytes(16).toString('hex');
-    const queryString = `slack_user_id=${command.user_id}&workspace_id=${command.team_id}&state=${state}`;
+
+    const queryString = querystring.stringify({
+      slack_user_id: command.user_id,
+      workspace_id: command.team_id,
+      state: state,
+    });
+
     const fullCallbackUrl = `${LASTFM_CALLBACK_URL}?${queryString}`;
 
     db.run(
@@ -47,11 +54,19 @@ export default function (app) {
     }
 
     blocks.push({
-      type: 'section',
-      text: {
-        type: 'mrkdwn',
-        text: `🔗 Click to ${userLink ? 're-' : ''}link your last.fm account:\n<${authUrl}|Authenticate with last.fm>\n\nThis link expires in *10 minutes*.`,
-      },
+      type: 'actions',
+      elements: [
+        {
+          type: 'button',
+          text: {
+            type: 'plain_text',
+            text: userLink ? '🔁 Re-link Last.fm' : '🔗 Link Last.fm',
+            emoji: true,
+          },
+          url: authUrl,
+          action_id: 'link_lastfm',
+        },
+      ],
     });
 
     await respond({
