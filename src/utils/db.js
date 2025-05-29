@@ -1,5 +1,8 @@
 import sqlite3 from 'sqlite3';
-const db = new sqlite3.Database('./slackfm.db');
+import path from 'path';
+
+const dbPath = process.env.DB_PATH || './slackfm.db';
+const db = new sqlite3.Database(path.resolve(dbPath));
 
 db.serialize(() => {
   db.run(`

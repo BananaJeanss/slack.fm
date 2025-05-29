@@ -37,10 +37,15 @@ To self-host slack.fm, follow these steps:
    npm install
    ```
 
-3. **Create a `.env` file**  
+3. **Set up your Slack app:**
+
+   - Go to the [Slack API](https://api.slack.com/apps) and create a new app using the slackmanifest.json file.
+   - Double-check that everything is set up correctly.
+
+4. **Create a `.env` file**  
    Copy `.env.example` and fill in the required variables.
 
-4. **Run the app:**
+5. **Run the app:**
 
    ```bash
    npm start
@@ -59,6 +64,7 @@ To self-host slack.fm, follow these steps:
 - `SPOTIFY_CLIENT_ID` – Your Spotify client ID
 - `SPOTIFY_CLIENT_SECRET` – Your Spotify client secret
 - `USE_LANGUAGE_FILTERING` – `true` or `false` to enable/disable language filtering for output
+- `DB_PATH` – Path to the SQLite database file (default: `./utils/slackfm.db`)
 
 ## Usage
 
