@@ -144,7 +144,7 @@
                 "should_escape": true
             },
             {
-                "command": "/commands",
+                "command": "/slackfmcommands",
                 "description": "Lists basic commands + link to commands.md",
                 "should_escape": false
             }

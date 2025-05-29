@@ -1,5 +1,5 @@
 export default function (app) {
-    app.command('/commands', async ({ ack, respond }) => {
+    app.command('/slackfmcommands', async ({ ack, respond }) => {
         await ack();
 
         const commandsText = `
