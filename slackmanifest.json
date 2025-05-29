@@ -142,6 +142,11 @@
                 "description": "Lists the top 10 people who listen to a song.",
                 "usage_hint": "<song>",
                 "should_escape": true
+            },
+            {
+                "command": "/commands",
+                "description": "Lists basic commands + link to commands.md",
+                "should_escape": false
             }
         ]
     },
