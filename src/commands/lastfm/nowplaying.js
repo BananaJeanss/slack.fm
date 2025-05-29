@@ -145,7 +145,7 @@ export default function (app) {
               elements: [
                 {
                   type: 'mrkdwn',
-                  text: `_Album: ${album}_`,
+                  text: `*Album:* ${album}`,
                 },
               ],
             });
