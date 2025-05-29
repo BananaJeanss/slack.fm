@@ -2,7 +2,7 @@ import db from '../../utils/db.js';
 
 export default function (app) {
   // /unlink command
-  app.command('/unlink', async ({ ack, respond, command }) => {
+  app.command('/unlinklastfm', async ({ ack, respond, command }) => {
     await ack();
 
     try {

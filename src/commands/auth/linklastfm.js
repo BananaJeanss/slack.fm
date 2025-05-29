@@ -4,7 +4,7 @@ const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 const LASTFM_CALLBACK_URL = process.env.LASTFM_CALLBACK_URL;
 
 export default function (app) {
-  app.command('/link', async ({ ack, respond, command }) => {
+  app.command('/linklastfm', async ({ ack, respond, command }) => {
     await ack();
 
     // Check if the user is already linked in this workspace
@@ -50,7 +50,7 @@ export default function (app) {
       type: 'section',
       text: {
         type: 'mrkdwn',
-        text: `🔗 Click to link your last.fm account:\n<${authUrl}|Authenticate with last.fm>\n\nThis link expires in *10 minutes*.`,
+        text: `🔗 Click to ${userLink ? 're-' : ''}link your last.fm account:\n<${authUrl}|Authenticate with last.fm>\n\nThis link expires in *10 minutes*.`,
       },
     });
 

@@ -17,7 +17,7 @@
                 "should_escape": false
             },
             {
-                "command": "/link",
+                "command": "/linklastfm",
                 "description": "Link your last.fm account.",
                 "should_escape": false
             },
@@ -45,7 +45,7 @@
                 "should_escape": false
             },
             {
-                "command": "/unlink",
+                "command": "/unlinklastfm",
                 "description": "Unlinks your last.fm account from your slack account.",
                 "should_escape": false
             },
