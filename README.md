@@ -43,7 +43,7 @@ To self-host slack.fm, follow these steps:
 4. **Run the app:**
 
    ```bash
-   node index.js
+   npm start
    ```
 
 ## Environment Variables
