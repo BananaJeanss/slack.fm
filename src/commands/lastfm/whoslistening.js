@@ -88,7 +88,7 @@ export default function (app) {
         ];
 
         selectedUsers.forEach((user) => {
-          const trackText = `*${user.song}* by *${user.artist}*${user.album ? `\n_Album: ${user.album}_` : ''}`;
+          const trackText = `*${user.song}* by *${user.artist}*${user.album ? `\n*Album: ${user.album}*` : ''}`;
 
           blocks.push({
             type: 'section',
@@ -115,7 +115,7 @@ export default function (app) {
               elements: [
                 {
                   type: 'mrkdwn',
-                  text: `_And ${listeningUsers.length - 5} more ${listeningUsers.length - 5 === 1 ? 'person is' : 'people are'} listening! 🎶_`,
+                  text: `*And ${listeningUsers.length - 5} more ${listeningUsers.length - 5 === 1 ? 'person is' : 'people are'} listening! 🎶*`,
                 },
               ],
             }

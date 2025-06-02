@@ -186,7 +186,7 @@ export default function (app) {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `🎵 *Top 10 for* _${song}_ *by* _${artist}_:`,
+              text: `🎵 *Top 10 for* *${song}* by *${artist}*:`,
             },
             accessory: {
               type: 'image',

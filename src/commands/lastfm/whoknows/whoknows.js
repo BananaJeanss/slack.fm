@@ -134,7 +134,7 @@ export default function (app) {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:trophy: *Top 10 for* _${artist}_:`,
+              text: `:trophy: *Top 10 for* *${artist}*:`,
             },
             accessory: {
               type: 'image',

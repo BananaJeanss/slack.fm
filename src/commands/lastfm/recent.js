@@ -109,7 +109,7 @@ export default function (app) {
               text: {
                 type: 'mrkdwn',
                 text: `*${count + 1}. ${artist} –* ${title} ${
-                  album ? `• _${album}_` : ''
+                  album ? `• *${album}*` : ''
                 }\n${timestamp}`,
               },
               ...(count === 0 && coverImage
