@@ -89,6 +89,8 @@ More commands can be found in the [commands.md](commands.md) file.
 
 Contributions are welcome! Please fork the repository and create a pull request. For major changes, open an issue first to discuss what you’d like to change.
 
+For further information on contributing, please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for details.
