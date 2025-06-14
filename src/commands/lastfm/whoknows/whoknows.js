@@ -1,6 +1,12 @@
 import axios from 'axios';
 import db from '../../../utils/db.js';
 import getDisplayName from '../../../utils/getDisplayName.js';
+import {
+  resolveArtistImage,
+  getPlaceholderImage,
+} from '../../../utils/getImage.js';
+import notLinkedMessage from '#utils/notLinkedMessage.js';
+
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
 export default function (app) {
@@ -21,10 +27,7 @@ export default function (app) {
         )
       );
       if (!row) {
-        return respond({
-          response_type: 'ephemeral',
-          text: "⚠️ You haven't linked your Last.fm profile. Use `/link` first!",
-        });
+        return notLinkedMessage(targetSlackId, command.user_id, respond);
       }
       const username = row.lastfm_username;
       try {
@@ -83,7 +86,7 @@ export default function (app) {
           });
         }
 
-        // Fetch artist info to get the image
+        // Fetch artist image using the new resolver
         let artistImage = null;
         try {
           const artistInfoRes = await axios.get(
@@ -93,15 +96,14 @@ export default function (app) {
           );
 
           const artistInfo = artistInfoRes.data.artist;
-          artistImage =
-            artistInfo?.image?.find((i) => i.size === 'extralarge')?.[
-              '#text'
-            ] ||
-            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+          artistImage = await resolveArtistImage(artist, artistInfo?.image);
         } catch (e) {
-          console.warn('Failed to fetch artist image:', e.message);
-          artistImage =
-            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+          console.warn('Failed to fetch artist info:', e.message);
+        }
+
+        // Use placeholder only if no image found
+        if (!artistImage) {
+          artistImage = getPlaceholderImage('artist');
         }
 
         // Fetch playcount for each user (parallel, but be mindful of rate limits)

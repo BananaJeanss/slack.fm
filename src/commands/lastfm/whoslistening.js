@@ -22,8 +22,8 @@ export default function (app) {
 
         if (!rows || rows.length === 0) {
           return respond({
-            response_type: 'ephemeral',
-            text: '⚠️ No linked users found in this workspace. Use `/link` to connect your Last.fm account!',
+            response_type: 'in_channel',
+            text: '⚠️ No users are linked to Last.fm in this workspace. Use `/linklastfm` to connect your account.',
           });
         }
 

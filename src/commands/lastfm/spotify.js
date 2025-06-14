@@ -1,6 +1,7 @@
 import axios from 'axios';
 import db from '../../utils/db.js';
 import getDisplayName from '../../utils/getDisplayName.js';
+import notLinkedMessage from '#utils/notLinkedMessage.js';
 
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
@@ -47,11 +48,7 @@ export default function (app) {
           }
 
           if (!row) {
-            const msg =
-              targetSlackId === command.user_id
-                ? '⚠️ You haven’t linked your Last.fm profile. Use `/link` first!'
-                : '⚠️ That user hasn’t linked Last.fm.';
-            return respond({ response_type: 'ephemeral', text: msg });
+            return notLinkedMessage(targetSlackId, command.user_id, respond);
           }
 
           const username = row.lastfm_username;
