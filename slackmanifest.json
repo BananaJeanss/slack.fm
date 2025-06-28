@@ -147,6 +147,11 @@
                 "command": "/slackfmcommands",
                 "description": "Lists basic commands + link to commands.md",
                 "should_escape": false
+            },
+            {
+                "command": "/linkedcount",
+                "description": "Displays the amount of linked users in the workspace.",
+                "should_escape": false
             }
         ]
     },
