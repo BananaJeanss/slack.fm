@@ -113,7 +113,14 @@ Deliver a heartwarming, sincere celebration of their music taste. Be poetic, kin
                 }
               );
 
-              const compliment = aiResponse.data.choices?.[0]?.message?.content;
+              let compliment = aiResponse.data.choices?.[0]?.message?.content;
+
+              // remove <think> tags if present
+              if (compliment) {
+                compliment = compliment.replace(/<think>(.*?)<\/think>/gs, '');
+              } else {
+                throw new Error('No compliment generated');
+              }
 
               // Step 6: Record compliment usage
               db.run(

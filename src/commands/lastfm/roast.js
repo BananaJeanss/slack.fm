@@ -114,7 +114,14 @@ Deliver a hilarious, cutting roast that drags their taste through the mud. Be ed
                 }
               );
 
-              const roast = aiResponse.data.choices?.[0]?.message?.content;
+              let roast = aiResponse.data.choices?.[0]?.message?.content;
+
+              // remove <think> tags if present
+              if (roast) {
+                roast = roast.replace(/<think>(.*?)<\/think>/gs, '');
+              } else {
+                throw new Error('No roast generated');
+              }
 
               // Step 6: Record roast usage
               db.run(
