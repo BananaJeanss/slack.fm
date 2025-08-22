@@ -106,9 +106,12 @@ export default function (app) {
           artistImage = getPlaceholderImage('artist');
         }
 
-        // Fetch playcount for each user (parallel, but be mindful of rate limits)
+        const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
+        // Fetch playcount for each user
         const playcounts = await Promise.all(
-          rows.map(async (row) => {
+          rows.map(async (row, index) => {
+            await delay(index * 40); // 40ms wait between each request
             try {
               const res = await axios.get(
                 `https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${encodeURIComponent(

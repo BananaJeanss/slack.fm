@@ -149,9 +149,11 @@ export default function (app) {
             'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
         }
 
-        // Fetch playcount for each user (parallel, but be mindful of rate limits)
+        // Fetch playcount for each user
+        const delay = (ms) => new Promise((r) => setTimeout(r, ms));
         const playcounts = await Promise.all(
-          rows.map(async (row) => {
+          rows.map(async (row, index) => {
+            await delay(index * 40); // 40ms wait between each request
             try {
               const res = await axios.get(
                 `https://ws.audioscrobbler.com/2.0/?method=album.getInfo&artist=${encodeURIComponent(

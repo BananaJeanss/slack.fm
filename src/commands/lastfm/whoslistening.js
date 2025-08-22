@@ -27,44 +27,49 @@ export default function (app) {
           });
         }
 
+        const delay = (ms) => new Promise((r) => setTimeout(r, ms));
+
         // Check each user's current listening status
-        const listeningUsers = [];
+        const listeningUsers = await Promise.all(
+          rows.map(async (row, index) => {
+            await delay(index * 40); // 40ms wait between each request
+            try {
+              const response = await axios.get(
+                `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(
+                  row.lastfm_username
+                )}&api_key=${LASTFM_API_KEY}&format=json&limit=1`
+              );
 
-        for (const row of rows) {
-          try {
-            const response = await axios.get(
-              `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(
-                row.lastfm_username
-              )}&api_key=${LASTFM_API_KEY}&format=json&limit=1`
-            );
+              const track = response.data.recenttracks?.track?.[0];
 
-            const track = response.data.recenttracks?.track?.[0];
-
-            // Check if the track is currently playing (has nowplaying attribute)
-            if (track && track['@attr']?.nowplaying === 'true') {
-              listeningUsers.push({
-                slack_user_id: row.slack_user_id,
-                display_name: await getDisplayName(row.slack_user_id),
-                lastfm_username: row.lastfm_username,
-                artist: track.artist['#text'],
-                song: track.name,
-                album: track.album['#text'] || '',
-                image:
-                  track.image?.find((img) => img.size === 'medium')?.[
-                    '#text'
-                  ] || null,
-              });
+              if (track && track['@attr']?.nowplaying === 'true') {
+                return {
+                  slack_user_id: row.slack_user_id,
+                  display_name: await getDisplayName(row.slack_user_id),
+                  lastfm_username: row.lastfm_username,
+                  artist: track.artist['#text'],
+                  song: track.name,
+                  album: track.album['#text'] || '',
+                  image:
+                    track.image?.find((img) => img.size === 'medium')?.[
+                      '#text'
+                    ] || null,
+                };
+              }
+            } catch (e) {
+              console.warn(
+                `Failed to fetch data for ${row.lastfm_username}:`,
+                e.message
+              );
             }
-          } catch (e) {
-            console.warn(
-              `Failed to fetch data for ${row.lastfm_username}:`,
-              e.message
-            );
-            // Continue checking other users even if one fails
-          }
-        }
+            return null;
+          })
+        );
 
-        if (listeningUsers.length === 0) {
+        // Filter out nulls (users not currently listening or errored)
+        const filteredListeningUsers = listeningUsers.filter(Boolean);
+
+        if (filteredListeningUsers.length === 0) {
           return respond({
             response_type: 'in_channel',
             text: '🎧 Nobody is currently listening to music in this workspace! Time to start scrobbling! 🎵',
@@ -72,7 +77,7 @@ export default function (app) {
         }
 
         // Shuffle the array and take up to 5 users
-        const shuffled = listeningUsers.sort(() => 0.5 - Math.random());
+        const shuffled = filteredListeningUsers.sort(() => 0.5 - Math.random());
         const selectedUsers = shuffled.slice(0, 5);
 
         // Build the response blocks
@@ -107,7 +112,7 @@ export default function (app) {
         });
 
         // Add a footer with the total count if there are more listeners
-        if (listeningUsers.length > 5) {
+        if (filteredListeningUsers.length > 5) {
           blocks.push(
             { type: 'divider' },
             {
@@ -115,7 +120,7 @@ export default function (app) {
               elements: [
                 {
                   type: 'mrkdwn',
-                  text: `*And ${listeningUsers.length - 5} more ${listeningUsers.length - 5 === 1 ? 'person is' : 'people are'} listening! 🎶*`,
+                  text: `*And ${filteredListeningUsers.length - 5} more ${filteredListeningUsers.length - 5 === 1 ? 'person is' : 'people are'} listening! 🎶*`,
                 },
               ],
             }
