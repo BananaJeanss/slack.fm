@@ -23,6 +23,17 @@ db.serialize(() => {
   `);
 
   db.run(`
+    CREATE TABLE IF NOT EXISTS whoknows_crowns (
+      slack_user_id TEXT NOT NULL,
+      workspace_id TEXT NOT NULL,
+      artist_name TEXT NOT NULL,
+      playcount INTEGER NOT NULL,
+      earned_at INTEGER NOT NULL,
+      PRIMARY KEY (workspace_id, artist_name)
+    )
+  `);
+
+  db.run(`
     CREATE TABLE IF NOT EXISTS link_states (
       slack_user_id TEXT NOT NULL,
       workspace_id TEXT NOT NULL,
@@ -43,6 +54,12 @@ db.serialize(() => {
 
   db.run(
     `CREATE INDEX IF NOT EXISTS idx_roast_time ON roast_usage(slack_user_id, timestamp)`
+  );
+  db.run(
+    `CREATE INDEX IF NOT EXISTS idx_crowns_workspace_user ON whoknows_crowns(workspace_id, slack_user_id)`
+  );
+  db.run(
+    `CREATE INDEX IF NOT EXISTS idx_crowns_workspace_artist ON whoknows_crowns(workspace_id, artist_name)`
   );
 
   db.run('PRAGMA journal_mode=WAL;');

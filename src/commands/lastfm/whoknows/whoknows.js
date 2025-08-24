@@ -1,10 +1,7 @@
 import axios from 'axios';
-import db from '../../../utils/db.js';
-import getDisplayName from '../../../utils/getDisplayName.js';
-import {
-  resolveArtistImage,
-  getPlaceholderImage,
-} from '../../../utils/getImage.js';
+import db from '#utils/db.js';
+import getDisplayName from '#utils/getDisplayName.js';
+import { resolveArtistImage, getPlaceholderImage } from '#utils/getImage.js';
 import notLinkedMessage from '#utils/notLinkedMessage.js';
 
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
@@ -121,8 +118,9 @@ export default function (app) {
                 )}&api_key=${LASTFM_API_KEY}&format=json`
               );
               const userplaycount = parseInt(
-                res.data.artist?.stats?.userplaycount || 0
-              );
+                res.data.artist?.stats?.userplaycount || 0,
+                10
+              ); // ensure base 10
               return { slack_user_id: row.slack_user_id, userplaycount };
             } catch {
               return { slack_user_id: row.slack_user_id, userplaycount: 0 };
@@ -133,13 +131,111 @@ export default function (app) {
         // Sort by playcount descending
         playcounts.sort((a, b) => b.userplaycount - a.userplaycount);
 
+        // crown check
+        // person with most streams gets/steals the crown if streams >=100
+        const crownLeader = playcounts[0];
+
+        let newLeaderType = 'none'; // "stealer" or "first"
+        let crownRow = null;
+
+        if (crownLeader.userplaycount >= 100) {
+          try {
+            crownRow = await new Promise((resolve, reject) => {
+              db.get(
+                'SELECT slack_user_id, playcount, earned_at FROM whoknows_crowns WHERE workspace_id = ? AND artist_name = ?',
+                [command.team_id, artist],
+                (err, row) => {
+                  if (err) reject(err);
+                  else resolve(row);
+                }
+              );
+            });
+
+            if (!crownRow) {
+              // No crown exists, assign to current leader
+              await new Promise((resolve, reject) => {
+                db.run(
+                  'INSERT INTO whoknows_crowns (slack_user_id, workspace_id, artist_name, playcount, earned_at) VALUES (?, ?, ?, ?, ?)',
+                  [
+                    crownLeader.slack_user_id,
+                    command.team_id,
+                    artist,
+                    crownLeader.userplaycount,
+                    Math.floor(Date.now() / 1000),
+                  ],
+                  (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  }
+                );
+              });
+              newLeaderType = 'first';
+              crownRow = {
+                slack_user_id: crownLeader.slack_user_id,
+                playcount: crownLeader.userplaycount,
+                earned_at: Math.floor(Date.now() / 1000),
+              };
+            } else if (crownRow.slack_user_id !== crownLeader.slack_user_id) {
+              if (crownLeader.userplaycount > crownRow.playcount) {
+                // different user has the crown, steal the crown
+                await new Promise((resolve, reject) => {
+                  db.run(
+                    'UPDATE whoknows_crowns SET slack_user_id = ?, playcount = ?, earned_at = ? WHERE workspace_id = ? AND artist_name = ?',
+                    [
+                      crownLeader.slack_user_id,
+                      crownLeader.userplaycount,
+                      Math.floor(Date.now() / 1000),
+                      command.team_id,
+                      artist,
+                    ],
+                    (err) => {
+                      if (err) reject(err);
+                      else resolve();
+                    }
+                  );
+                });
+                newLeaderType = 'stealer';
+                crownRow = {
+                  slack_user_id: crownLeader.slack_user_id,
+                  playcount: crownLeader.userplaycount,
+                  earned_at: Math.floor(Date.now() / 1000),
+                };
+              }
+            } else if (crownLeader.userplaycount > crownRow.playcount) {
+              // Current leader has increased their playcount
+              await new Promise((resolve, reject) => {
+                db.run(
+                  'UPDATE whoknows_crowns SET playcount = ? WHERE workspace_id = ? AND artist_name = ?',
+                  [crownLeader.userplaycount, command.team_id, artist],
+                  (err) => {
+                    if (err) reject(err);
+                    else resolve();
+                  }
+                );
+              });
+            }
+          } catch (error) {
+            console.error('Crown database error:', error);
+          }
+        }
+
         // Prepare leaderboard
+        let firstSectionText = `:trophy: *Top 10 for* *${artist}*:`;
+
+        if (newLeaderType != 'none') {
+          if (newLeaderType === 'stealer') {
+            firstSectionText += `\n\n:crown: *${await getDisplayName(crownLeader.slack_user_id)} has stolen the crown!*`;
+          } else {
+            firstSectionText += `\n\n:crown: *${await getDisplayName(crownLeader.slack_user_id)} is the first to earn the crown!*`;
+          }
+        }
+
         const blocks = [
           {
             type: 'section',
             text: {
               type: 'mrkdwn',
-              text: `:trophy: *Top 10 for* *${artist}*:`,
+              text: firstSectionText,
             },
             accessory: {
               type: 'image',

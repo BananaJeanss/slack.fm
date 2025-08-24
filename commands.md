@@ -44,11 +44,12 @@ A comprehensive guide to all slash commands available in slack.fm.
 
 ## Whoknows Commands
 
-| Command          | Description                           | Usage                             |
-| ---------------- | ------------------------------------- | --------------------------------- |
-| `/whoknows`      | Top 10 people who listen to an artist | `/whoknows [artist]`              |
-| `/whoknowsalbum` | Top 10 people who listen to an album  | `/whoknowsalbum [artist - album]` |
-| `/whoknowssong`  | Top 10 people who listen to a song    | `/whoknowssong [artist - song]`   |
+| Command          | Description                                                    | Usage                             |
+| ---------------- | -------------------------------------------------------------- | --------------------------------- |
+| `/whoknows`      | Top 10 people who listen to an artist                          | `/whoknows [artist]`              |
+| `/whoknowsalbum` | Top 10 people who listen to an album                           | `/whoknowsalbum [artist - album]` |
+| `/whoknowssong`  | Top 10 people who listen to a song                             | `/whoknowssong [artist - song]`   |
+| `/crownboard`    | Top 10 users with the most crowns, based off /whoknows artists | `/crownboard`                     |
 
 ## Fun Commands
 
@@ -62,7 +63,6 @@ A comprehensive guide to all slash commands available in slack.fm.
 | Command            | Description                                            | Usage              |
 | ------------------ | ------------------------------------------------------ | ------------------ |
 | `/about`           | Show info about slack.fm                               | `/about`           |
-| `/ping`            | Check if the bot is responding                         | `/ping`            |
 | `/uptime`          | Display how long bot has been running                  | `/uptime`          |
 | `/slackfmcommands` | Shows a few basic commands and a link to commands.md   | `/slackfmcommands` |
 | `/linkedcount`     | Show how many users have linked their Last.fm accounts | `/linkedcount`     |

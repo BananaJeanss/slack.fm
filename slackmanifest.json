@@ -12,11 +12,6 @@
         },
         "slash_commands": [
             {
-                "command": "/ping",
-                "description": "Pong!",
-                "should_escape": false
-            },
-            {
                 "command": "/linklastfm",
                 "description": "Link your last.fm account.",
                 "should_escape": false
@@ -152,6 +147,11 @@
                 "command": "/linkedcount",
                 "description": "Displays the amount of linked users in the workspace.",
                 "should_escape": false
+            },
+            {
+                "command": "/crownboard",
+                "description": "Shows the top 10 crown holders for /whoknows",
+                "should_escape": true
             }
         ]
     },
