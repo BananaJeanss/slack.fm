@@ -1,14 +1,19 @@
 <p align="center">
-    <img src="assets/slackfm.png" alt="slack.fm logo" width="150"/>
+    <img src="assets/slackfmbanner.png" alt="slack.fm banner"/>
 </p>
 
 # slack.fm
 
 A last.fm bot for Slack
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![GitHub issues](https://img.shields.io/github/issues/BananaJeanss/slack.fm?style=flat&logo=github)](https://github.com/BananaJeanss/slack.fm/issues)
+[![GitHub stars](https://img.shields.io/github/stars/BananaJeanss/slack.fm?style=flat&logo=github&color=yellow)](https://github.com/BananaJeanss/slack.fm/stargazers)
+[![Deploy to Nest](https://github.com/BananaJeanss/slack.fm/actions/workflows/nest.yml/badge.svg)](https://github.com/BananaJeanss/slack.fm/actions/workflows/nest.yml)
+
 ## Introduction
 
-**slack.fm** is a Slack bot that lets you connect your Last.fm account to view your music stats, get song/album/artist info, and more—all from within Slack. Perfect for sharing your music taste, discovering new tracks, and having fun with your team.
+**slack.fm** is a Slack bot that lets you connect your Last.fm account to view your music stats, get song/album/artist info, and more, all from within Slack. Perfect for sharing your music taste, discovering new tracks, having fun and competing for crowns.
 
 ## Features
 
@@ -16,9 +21,10 @@ A last.fm bot for Slack
 - View your or others now playing track, profile, top artists, albums, and songs
 - Get fun roasts of your music taste
 - See detailed stats for songs, albums, and artists
+- View whoknows leaderboards, and compete for crowns
 - Easy-to-use Slack slash commands
 
-<img src="assets/song.png" alt="Song command example" width="400"/>
+<img src="assets/song2.png" alt="Song command example" width="550"/>
 
 ## Installation
 
@@ -90,6 +96,10 @@ More commands can be found in the [commands.md](commands.md) file.
 Contributions are welcome! Please fork the repository and create a pull request. For major changes, open an issue first to discuss what you’d like to change.
 
 For further information on contributing, please refer to the [CONTRIBUTING.md](CONTRIBUTING.md) file.
+
+### Contributors
+
+[![contributors](https://contributors-img.web.app/image?repo=BananaJeanss/slack.fm)](https://github.com/BananaJeanss/slack.fm/graphs/contributors)
 
 ## License
 
