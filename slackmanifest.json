@@ -75,12 +75,6 @@
                 "should_escape": true
             },
             {
-                "command": "/spotify",
-                "description": "Finds the spotify URL for the last played song.",
-                "usage_hint": "user",
-                "should_escape": true
-            },
-            {
                 "command": "/plays",
                 "description": "Shows the scrobble count of the user.",
                 "usage_hint": "user",
