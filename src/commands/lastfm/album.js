@@ -6,6 +6,43 @@ import notLinkedMessage from '#utils/notLinkedMessage.js';
 
 const web = new WebClient(process.env.SLACK_BOT_TOKEN);
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
+const SPOTIFY_CLIENT_ID = process.env.SPOTIFY_CLIENT_ID;
+const SPOTIFY_CLIENT_SECRET = process.env.SPOTIFY_CLIENT_SECRET;
+
+// spotify search helper
+async function searchSpotifyAlbum(albumName) {
+  // get token
+  const tokenResp = await axios.post(
+    'https://accounts.spotify.com/api/token',
+    new URLSearchParams({
+      grant_type: 'client_credentials',
+    }),
+    {
+      headers: {
+        'Content-Type': 'application/x-www-form-urlencoded',
+        Authorization:
+          'Basic ' +
+          Buffer.from(SPOTIFY_CLIENT_ID + ':' + SPOTIFY_CLIENT_SECRET).toString(
+            'base64'
+          ),
+      },
+    }
+  );
+
+  const token = tokenResp.data.access_token;
+
+  // search album
+  const constructedUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(
+    albumName
+  )}&type=album&limit=1`;
+  const searchResp = await axios.get(constructedUrl, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+
+  return searchResp.data.albums?.items?.[0] || null;
+}
 
 export default function (app) {
   app.command('/album', async ({ ack, respond, command }) => {
@@ -125,6 +162,47 @@ export default function (app) {
             }
 
             const displayName = await getDisplayName(targetSlackId);
+
+            let actionButtons = {
+              type: 'actions',
+              elements: [
+                {
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'View on Last.fm',
+                    emoji: true,
+                  },
+                  url: info.url,
+                  action_id: 'view_album_on_lastfm',
+                },
+              ],
+            };
+
+            // if spotify url available, add button
+            try {
+              if (SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET) {
+                const spotifyTrack = await searchSpotifyAlbum(
+                  `${artist} ${albumName}`
+                );
+                if (spotifyTrack?.external_urls?.spotify) {
+                  actionButtons.elements.push({
+                    type: 'button',
+                    text: {
+                      type: 'plain_text',
+                      text: 'Listen on Spotify',
+                      emoji: true,
+                    },
+                    url: spotifyTrack.external_urls.spotify,
+                    action_id: 'listen_on_spotify',
+                  });
+                }
+              }
+            } catch (e) {
+              // log and ignore
+              console.error('Spotify search error:', e);
+            }
+
             const blocks = [
               {
                 type: 'section',
@@ -171,21 +249,7 @@ export default function (app) {
                   text: `*Summary:*\n${summaryText}`,
                 },
               },
-              {
-                type: 'actions',
-                elements: [
-                  {
-                    type: 'button',
-                    text: {
-                      type: 'plain_text',
-                      text: 'View on Last.fm',
-                      emoji: true,
-                    },
-                    url: info.url,
-                    action_id: 'view_album_on_lastfm',
-                  },
-                ],
-              },
+              actionButtons,
             ];
 
             await respond({ response_type: 'in_channel', blocks });
@@ -263,6 +327,46 @@ export default function (app) {
           summaryText = summaryText.slice(0, 590) + '…';
         }
 
+        let actionButtons = {
+          type: 'actions',
+          elements: [
+            {
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'View on Last.fm',
+                emoji: true,
+              },
+              url: info.url,
+              action_id: 'view_album_on_lastfm',
+            },
+          ],
+        };
+
+        // if spotify url available, add button
+        try {
+          if (SPOTIFY_CLIENT_ID && SPOTIFY_CLIENT_SECRET) {
+            const spotifyTrack = await searchSpotifyAlbum(
+              `${artist} ${albumName}`
+            );
+            if (spotifyTrack?.external_urls?.spotify) {
+              actionButtons.elements.push({
+                type: 'button',
+                text: {
+                  type: 'plain_text',
+                  text: 'Listen on Spotify',
+                  emoji: true,
+                },
+                url: spotifyTrack.external_urls.spotify,
+                action_id: 'listen_on_spotify',
+              });
+            }
+          }
+        } catch (e) {
+          // log and ignore
+          console.error('Spotify search error:', e);
+        }
+
         const blocks = [
           {
             type: 'section',
@@ -297,21 +401,7 @@ export default function (app) {
               text: `*Summary:*\n${summaryText}`,
             },
           },
-          {
-            type: 'actions',
-            elements: [
-              {
-                type: 'button',
-                text: {
-                  type: 'plain_text',
-                  text: 'View on Last.fm',
-                  emoji: true,
-                },
-                url: info.url,
-                action_id: 'view_album_on_lastfm',
-              },
-            ],
-          },
+          actionButtons,
         ];
 
         await respond({ response_type: 'in_channel', blocks });
