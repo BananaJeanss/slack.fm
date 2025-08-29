@@ -45,6 +45,12 @@ async function searchSpotifyArtist(artistName) {
   return searchResp.data.artists?.items?.[0] || null;
 }
 
+async function searchAppleMusicArtist(artistName) {
+  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(artistName)}&entity=musicArtist&limit=1`;
+  const res = await axios.get(url);
+  return res.data.results[0] || null;
+}
+
 export default function (app) {
   app.command('/artist', async ({ ack, respond, command }) => {
     await ack();
@@ -178,6 +184,25 @@ export default function (app) {
               console.error('Spotify search error:', e);
             }
 
+            try {
+              const appleTrack = await searchAppleMusicArtist(artist);
+              if (appleTrack?.artistLinkUrl) {
+                actionButtons.elements.push({
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Listen on Apple Music',
+                    emoji: true,
+                  },
+                  url: appleTrack.artistLinkUrl,
+                  action_id: 'listen_on_applemusic',
+                });
+              }
+            } catch (e) {
+              // log and ignore
+              console.error('Apple Music search error:', e);
+            }
+
             const blocks = [
               {
                 type: 'section',
@@ -308,6 +333,25 @@ export default function (app) {
         } catch (e) {
           // log and ignore
           console.error('Spotify search error:', e);
+        }
+
+        try {
+          const appleTrack = await searchAppleMusicArtist(artist);
+          if (appleTrack?.artistLinkUrl) {
+            actionButtons.elements.push({
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Listen on Apple Music',
+                emoji: true,
+              },
+              url: appleTrack.artistLinkUrl,
+              action_id: 'listen_on_applemusic',
+            });
+          }
+        } catch (e) {
+          // log and ignore
+          console.error('Apple Music search error:', e);
         }
 
         const blocks = [

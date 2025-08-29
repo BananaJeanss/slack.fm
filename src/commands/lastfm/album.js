@@ -44,6 +44,12 @@ async function searchSpotifyAlbum(albumName) {
   return searchResp.data.albums?.items?.[0] || null;
 }
 
+async function searchAppleMusicAlbum(albumName) {
+  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(albumName)}&entity=album&limit=1`;
+  const res = await axios.get(url);
+  return res.data.results[0] || null;
+}
+
 export default function (app) {
   app.command('/album', async ({ ack, respond, command }) => {
     await ack();
@@ -201,6 +207,27 @@ export default function (app) {
             } catch (e) {
               // log and ignore
               console.error('Spotify search error:', e);
+            }
+
+            try {
+              const appleTrack = await searchAppleMusicAlbum(
+                `${artist} ${albumName}`
+              );
+              if (appleTrack?.collectionViewUrl) {
+                actionButtons.elements.push({
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Listen on Apple Music',
+                    emoji: true,
+                  },
+                  url: appleTrack.collectionViewUrl,
+                  action_id: 'listen_on_applemusic',
+                });
+              }
+            } catch (e) {
+              // log and ignore
+              console.error('Apple Music search error:', e);
             }
 
             const blocks = [
@@ -365,6 +392,27 @@ export default function (app) {
         } catch (e) {
           // log and ignore
           console.error('Spotify search error:', e);
+        }
+
+        try {
+          const appleTrack = await searchAppleMusicAlbum(
+            `${artist} ${albumName}`
+          );
+          if (appleTrack?.collectionViewUrl) {
+            actionButtons.elements.push({
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Listen on Apple Music',
+                emoji: true,
+              },
+              url: appleTrack.collectionViewUrl,
+              action_id: 'listen_on_applemusic',
+            });
+          }
+        } catch (e) {
+          // log and ignore
+          console.error('Apple Music search error:', e);
         }
 
         const blocks = [

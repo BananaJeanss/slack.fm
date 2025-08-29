@@ -33,11 +33,17 @@ async function searchSpotifyTrack(trackName) {
   const constructedUrl = `https://api.spotify.com/v1/search?q=${encodeURIComponent(trackName)}&type=track&limit=1`;
   const searchResp = await axios.get(constructedUrl, {
     headers: {
-      Authorization: `Bearer ${token}`, // FIX: was 'Bearer ${token}'
+      Authorization: `Bearer ${token}`,
     },
   });
 
   return searchResp.data.tracks.items[0] || null;
+}
+
+async function searchAppleMusicTrack(trackName) {
+  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(trackName)}&entity=song&limit=1`;
+  const res = await axios.get(url);
+  return res.data.results[0] || null;
 }
 
 export default function (app) {
@@ -156,6 +162,27 @@ export default function (app) {
             } catch (e) {
               // log and ignore
               console.error('Spotify search error:', e);
+            }
+
+            try {
+              const appleTrack = await searchAppleMusicTrack(
+                `${artist} ${songName}`
+              );
+              if (appleTrack?.trackViewUrl) {
+                actionBlocks.elements.push({
+                  type: 'button',
+                  text: {
+                    type: 'plain_text',
+                    text: 'Listen on Apple Music',
+                    emoji: true,
+                  },
+                  url: appleTrack.trackViewUrl,
+                  action_id: 'listen_on_applemusic',
+                });
+              }
+            } catch (e) {
+              // log and ignore
+              console.error('Apple Music search error:', e);
             }
 
             const blocks = [
@@ -292,6 +319,27 @@ export default function (app) {
         } catch (e) {
           // log and ignore
           console.error('Spotify search error:', e);
+        }
+
+        try {
+          const appleTrack = await searchAppleMusicTrack(
+            `${artist} ${songName}`
+          );
+          if (appleTrack?.trackViewUrl) {
+            actionBlocks.elements.push({
+              type: 'button',
+              text: {
+                type: 'plain_text',
+                text: 'Listen on Apple Music',
+                emoji: true,
+              },
+              url: appleTrack.trackViewUrl,
+              action_id: 'listen_on_applemusic',
+            });
+          }
+        } catch (e) {
+          // log and ignore
+          console.error('Apple Music search error:', e);
         }
 
         const blocks = [
