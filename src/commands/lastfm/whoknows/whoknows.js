@@ -255,6 +255,23 @@ export default function (app) {
 
         for (let i = 0; i < Math.min(10, playcountsWithNames.length); i++) {
           const user = playcountsWithNames[i];
+          if (
+            i === 0 &&
+            crownRow &&
+            user.slack_user_id === crownRow.slack_user_id
+          ) {
+            // add since date for crown leader
+            if (newLeaderType === 'none') { // only if not changed
+              blocks.push({
+                type: 'section',
+                text: {
+                  type: 'mrkdwn',
+                  text: `*${i + 1}. ${user.displayName}* — ${user.userplaycount} plays (since ${new Date(crownRow.earned_at * 1000).toLocaleDateString()})`,
+                },
+              });
+              continue;
+            }
+          }
           blocks.push({
             type: 'section',
             text: {
