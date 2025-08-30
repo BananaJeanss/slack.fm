@@ -72,24 +72,45 @@ export default function (app) {
           )}&api_key=${LASTFM_API_KEY}&format=json`;
           const { data } = await axios.get(url);
 
+          if (data.error) {
+            await respond({
+              response_type: 'ephemeral',
+              text: `:warning: Last.fm error: ${data.message || 'unknown.'}`,
+            });
+            return;
+          }
+
           const profile = data.user;
           const tag = await getDisplayName(targetSlackId);
 
-          const blocks = [
-            {
-              type: 'section',
-              text: {
-                type: 'mrkdwn',
-                text: `🎧 *${tag}'s Last.fm profile:*\n*Username:* ${profile.name}\n*Scrobbles:* ${profile.playcount}\n*Registered:* ${new Date(
-                  parseInt(profile.registered.unixtime) * 1000
-                ).toLocaleDateString()}`,
-              },
-              accessory: {
-                type: 'image',
-                image_url: profile.image?.[3]?.['#text'], // large avatar
-                alt_text: `${profile.name}'s avatar`,
-              },
+          // pick largest non-empty image URL, replace with placeholder if none found
+          const avatarUrl =
+            profile.image
+              ?.reverse()
+              .map((i) => i['#text'])
+              .find((u) => u && u.trim().length) ||
+            'https://lastfm.freetls.fastly.net/i/u/300x300/2a96cbd8b46e442fc41c2b86b821562f.png';
+
+          const sectionBlock = {
+            type: 'section',
+            text: {
+              type: 'mrkdwn',
+              text: `🎧 *${tag}'s Last.fm profile:*\n*Username:* ${profile.name}\n*Scrobbles:* ${profile.playcount}\n*Registered:* ${new Date(
+                parseInt(profile.registered.unixtime) * 1000
+              ).toLocaleDateString()}`,
             },
+          };
+
+          if (avatarUrl) {
+            sectionBlock.accessory = {
+              type: 'image',
+              image_url: avatarUrl,
+              alt_text: `${profile.name}'s avatar`,
+            };
+          }
+
+          const blocks = [
+            sectionBlock,
             {
               type: 'actions',
               elements: [
@@ -114,7 +135,7 @@ export default function (app) {
             response_type: 'ephemeral',
             text: ':warning: Failed to fetch Last.fm profile.',
           });
-          console.error('/profile Error:', e);
+          console.error('/profile Error:', e?.response?.data || e);
         }
       }
     );
