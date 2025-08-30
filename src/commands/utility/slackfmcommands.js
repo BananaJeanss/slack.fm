@@ -6,7 +6,7 @@ export default function (app) {
 *🎵 slack.fm Commands*
 
 *Basic Commands:*
-• \`/link\` - Link your Last.fm account
+• \`/linklastfm\` - Link your Last.fm account
 • \`/nowplaying\` - Show current/last played track
 • \`/artist\` - Show info about last played artist
 • \`/album\` - Show info about last played album

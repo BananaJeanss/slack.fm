@@ -78,8 +78,8 @@ Once the bot is running and added to your Slack workspace, you can use these bas
 
 | Command          | Description                                  |
 | ---------------- | -------------------------------------------- |
-| `/link`          | Link your Last.fm account                    |
-| `/unlink`        | Unlink your Last.fm account                  |
+| `/linklastfm`          | Link your Last.fm account                    |
+| `/unlinklastfm`        | Unlink your Last.fm account                  |
 | `/nowplaying`    | Shows your (or another user’s) current track |
 | `/profile`       | Shows Last.fm profile info                   |
 | `/artist`        | Shows info about your last played artist     |

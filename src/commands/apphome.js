@@ -76,7 +76,7 @@ async function publishHome(client, userId) {
           type: 'section',
           text: {
             type: 'mrkdwn',
-            text: '🔗 Not linked yet. Use `/link` to connect your Last.fm account.',
+            text: '🔗 Not linked yet. Use `/linklastfm` to connect your Last.fm account.',
           },
         },
     ...(username
@@ -135,14 +135,14 @@ async function publishHome(client, userId) {
             ],
           },
         ],
-        // /link
+        // /linklastfm
         [
           {
             type: 'rich_text',
             elements: [
               {
                 type: 'rich_text_section',
-                elements: [{ type: 'text', text: '/link' }],
+                elements: [{ type: 'text', text: '/linklastfm' }],
               },
             ],
           },
@@ -160,19 +160,19 @@ async function publishHome(client, userId) {
             elements: [
               {
                 type: 'rich_text_section',
-                elements: [{ type: 'text', text: '/link' }],
+                elements: [{ type: 'text', text: '/linklastfm' }],
               },
             ],
           },
         ],
-        // /unlink
+        // /unlinklastfm
         [
           {
             type: 'rich_text',
             elements: [
               {
                 type: 'rich_text_section',
-                elements: [{ type: 'text', text: '/unlink' }],
+                elements: [{ type: 'text', text: '/unlinklastfm' }],
               },
             ],
           },
@@ -190,7 +190,7 @@ async function publishHome(client, userId) {
             elements: [
               {
                 type: 'rich_text_section',
-                elements: [{ type: 'text', text: '/unlink' }],
+                elements: [{ type: 'text', text: '/unlinklastfm' }],
               },
             ],
           },

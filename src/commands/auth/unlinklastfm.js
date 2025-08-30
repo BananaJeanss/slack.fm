@@ -1,7 +1,7 @@
 import db from '../../utils/db.js';
 
 export default function (app) {
-  // /unlink command
+  // /unlinklastfm command
   app.command('/unlinklastfm', async ({ ack, respond, command }) => {
     await ack();
 
@@ -57,7 +57,7 @@ export default function (app) {
         ],
       });
     } catch (err) {
-      console.error('Error in /unlink command:', err);
+      console.error('Error in /unlinklastfm command:', err);
       await respond({
         response_type: 'ephemeral',
         text: '⚠️ Something went wrong. Please try again later.',

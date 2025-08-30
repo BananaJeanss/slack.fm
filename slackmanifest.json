@@ -3,7 +3,7 @@
         "name": "slack.fm",
         "description": "last.fm bot for slack",
         "background_color": "#050505",
-        "long_description": "slack.fm is a Slack bot that lets you connect your Last.fm account to view your music stats, get song/album/artist info, and more, all from within Slack. Perfect for sharing your music taste, discovering new tracks, having fun and competing for crowns.\r\n\r\nFeatures:\r\n- Link your Last.fm account to Slack\r\n- View your or others now playing track, profile, top artists, albums, and songs\r\n- Get fun roasts of your music taste\r\n- See detailed stats for songs, albums, and artists\r\n- View whoknows leaderboards, and compete for crowns\r\n- Easy-to-use Slack slash commands\r\n\r\nTo get started, link your account with /link. Commands can be found via https://github.com/BananaJeanss/slack.fm/blob/main/commands.md"
+        "long_description": "slack.fm is a Slack bot that lets you connect your Last.fm account to view your music stats, get song/album/artist info, and more, all from within Slack. Perfect for sharing your music taste, discovering new tracks, having fun and competing for crowns.\r\n\r\nFeatures:\r\n- Link your Last.fm account to Slack\r\n- View your or others now playing track, profile, top artists, albums, and songs\r\n- Get fun roasts of your music taste\r\n- See detailed stats for songs, albums, and artists\r\n- View whoknows leaderboards, and compete for crowns\r\n- Easy-to-use Slack slash commands\r\n\r\nTo get started, link your account with /linklastfm. Commands can be found via https://github.com/BananaJeanss/slack.fm/blob/main/commands.md"
     },
     "features": {
         "app_home": {

@@ -4,10 +4,10 @@ A comprehensive guide to all slash commands available in slack.fm.
 
 ## Authentication Commands
 
-| Command         | Description                 | Usage     |
-| --------------- | --------------------------- | --------- |
-| `/linklastfm`   | Link your Last.fm account   | `/link`   |
-| `/unlinklastfm` | Unlink your Last.fm account | `/unlink` |
+| Command         | Description                 | Usage           |
+| --------------- | --------------------------- | --------------- |
+| `/linklastfm`   | Link your Last.fm account   | `/linklastfm`   |
+| `/unlinklastfm` | Unlink your Last.fm account | `/unlinklastfm` |
 
 ## Profile & Stats Commands
 
@@ -19,12 +19,11 @@ A comprehensive guide to all slash commands available in slack.fm.
 
 ## Now Playing Commands
 
-| Command          | Description                              | Usage                              |
-| ---------------- | ---------------------------------------- | ---------------------------------- |
-| `/nowplaying`    | Show current or last played track        | `/nowplaying [@mention]`           |
-| `/cover`         | Show album art for current/last track    | `/cover [@mention or album name]`  |
-| `/spotify`       | Get Spotify link for current/last track  | `/spotify [@mention or song name]` |
-| `/whoslistening` | Show who is currently listening to music | `/whoslistening`                   |
+| Command          | Description                              | Usage                             |
+| ---------------- | ---------------------------------------- | --------------------------------- |
+| `/nowplaying`    | Show current or last played track        | `/nowplaying [@mention]`          |
+| `/cover`         | Show album art for current/last track    | `/cover [@mention or album name]` |
+| `/whoslistening` | Show who is currently listening to music | `/whoslistening`                  |
 
 ## Music Info Commands
 
