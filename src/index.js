@@ -145,7 +145,7 @@ expressApp.use('/lastfm', (await import('./routes/lastfm.js')).default);
 
 // Start the Express server
 const PORT = process.env.PORT || 3000;
-expressApp.listen(PORT, '0.0.0.0', () => console.log(`Express up on ${PORT}`));
+expressApp.listen(PORT, '0.0.0.0', () => console.log(`🌐 Express up on port ${PORT}`));
 
 // DB Cleanup
 await import('./utils/dbcleanup.js');
@@ -153,5 +153,17 @@ await import('./utils/dbcleanup.js');
 // Start the Slack app
 (async () => {
   await app.start();
-  app.logger.info('⚡️ Slack.fm is running!');
+
+  try {
+    const auth = await app.client.auth.test({
+      token: process.env.SLACK_BOT_TOKEN,
+    });
+    app.logger.info(
+      `⚡️ Slack.fm is running! Workspace: ${auth.team} (${auth.team_id})`
+    );
+  } catch (err) {
+    app.logger.warn(
+      `⚡️ Slack.fm is running! (Could not fetch workspace info)`
+    );
+  }
 })();
