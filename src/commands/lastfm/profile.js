@@ -114,6 +114,7 @@ export default function (app) {
             response_type: 'ephemeral',
             text: ':warning: Failed to fetch Last.fm profile.',
           });
+          console.error('/profile Error:', e);
         }
       }
     );
