@@ -2,6 +2,7 @@ import axios from 'axios';
 import db from '../../utils/db.js';
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 import getDisplayName from '../../utils/getDisplayName.js';
+import { API_CALL_DELAY } from '#utils/apicalldelay.js';
 
 export default function (app) {
   app.command('/whoslistening', async ({ command, ack, respond }) => {
@@ -32,7 +33,7 @@ export default function (app) {
         // Check each user's current listening status
         const listeningUsers = await Promise.all(
           rows.map(async (row, index) => {
-            await delay(index * 40); // 40ms wait between each request
+            await delay(index * API_CALL_DELAY); // .env APICALL_DELAY wait between each request
             try {
               const response = await axios.get(
                 `https://ws.audioscrobbler.com/2.0/?method=user.getrecenttracks&user=${encodeURIComponent(
