@@ -41,13 +41,21 @@ async function searchSpotifyTrack(trackName) {
 }
 
 async function searchAppleMusicTrack(trackName) {
-  const url = `https://itunes.apple.com/search?term=${encodeURIComponent(trackName)}&entity=song&limit=1`;
-  const res = await axios.get(url);
-  return res.data.results[0] || null;
+  try {
+    const url = `https://itunes.apple.com/search?term=${encodeURIComponent(trackName)}&entity=song&limit=1`;
+    const res = await axios.get(url);
+    return res.data.results[0] || null;
+  } catch (error) {
+    if (error.response?.status === 404) {
+      console.error(`Track ${trackName} not found on iTunes.`);
+    } else {
+      console.error(error);
+    }
+  }
 }
 
 export default function (app) {
-  app.command('/song', async ({ ack, respond, command }) => {
+  app.command('/getsong', async ({ ack, respond, command }) => {
     await ack();
 
     const input = command.text.trim();

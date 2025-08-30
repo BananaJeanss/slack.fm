@@ -27,11 +27,11 @@ A comprehensive guide to all slash commands available in slack.fm.
 
 ## Music Info Commands
 
-| Command   | Description                                                    | Usage                               |
-| --------- | -------------------------------------------------------------- | ----------------------------------- |
-| `/song`   | Show detailed info about last played song or search for a song | `/song [@mention or song name]`     |
-| `/album`  | Show detailed info about last played album                     | `/album [@mention or album name]`   |
-| `/artist` | Show detailed info about last played artist                    | `/artist [@mention or artist name]` |
+| Command    | Description                                                    | Usage                               |
+| ---------- | -------------------------------------------------------------- | ----------------------------------- |
+| `/getsong` | Show detailed info about last played song or search for a song | `/getsong [@mention or song name]`  |
+| `/album`   | Show detailed info about last played album                     | `/album [@mention or album name]`   |
+| `/artist`  | Show detailed info about last played artist                    | `/artist [@mention or artist name]` |
 
 ## Top Charts Commands
 

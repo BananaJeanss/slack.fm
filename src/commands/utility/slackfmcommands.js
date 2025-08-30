@@ -10,7 +10,7 @@ export default function (app) {
 • \`/nowplaying\` - Show current/last played track
 • \`/artist\` - Show info about last played artist
 • \`/album\` - Show info about last played album
-• \`/song\` - Show info about last played song
+• \`/getsong\` - Show info about last played song
 • \`/whoknows\` - Top listeners for an artist
 • \`/profile\` - Show Last.fm profile stats
 
