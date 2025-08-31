@@ -1,174 +1,183 @@
 {
-  "display_information": {
-    "name": "slack.fm",
-    "description": "last.fm bot for slack",
-    "background_color": "#050505",
-    "long_description": "slack.fm is a Slack bot that lets you connect your Last.fm account to view your music stats, get song/album/artist info, and more, all from within Slack. Perfect for sharing your music taste, discovering new tracks, having fun and competing for crowns.\r\n\r\nFeatures:\r\n- Link your Last.fm account to Slack\r\n- View your or others now playing track, profile, top artists, albums, and songs\r\n- Get fun roasts of your music taste\r\n- See detailed stats for songs, albums, and artists\r\n- View whoknows leaderboards, and compete for crowns\r\n- Easy-to-use Slack slash commands\r\n\r\nTo get started, link your account with /linklastfm. Commands can be found via https://github.com/BananaJeanss/slack.fm/blob/main/commands.md"
-  },
-  "features": {
-    "app_home": {
-      "home_tab_enabled": true,
-      "messages_tab_enabled": false,
-      "messages_tab_read_only_enabled": false
+    "display_information": {
+        "name": "slack.fm",
+        "description": "last.fm bot for slack",
+        "background_color": "#050505",
+        "long_description": "slack.fm is a Slack bot that lets you connect your Last.fm account to view your music stats, get song/album/artist info, and more, all from within Slack. Perfect for sharing your music taste, discovering new tracks, having fun and competing for crowns.\r\n\r\nFeatures:\r\n- Link your Last.fm account to Slack\r\n- View your or others now playing track, profile, top artists, albums, and songs\r\n- Get fun roasts of your music taste\r\n- See detailed stats for songs, albums, and artists\r\n- View whoknows leaderboards, and compete for crowns\r\n- Easy-to-use Slack slash commands\r\n\r\nTo get started, link your account with /linklastfm. Commands can be found via https://github.com/BananaJeanss/slack.fm/blob/main/commands.md"
     },
-    "bot_user": {
-      "display_name": "slack.fm",
-      "always_online": true
+    "features": {
+        "app_home": {
+            "home_tab_enabled": true,
+            "messages_tab_enabled": true,
+            "messages_tab_read_only_enabled": false
+        },
+        "bot_user": {
+            "display_name": "slack.fm",
+            "always_online": true
+        },
+        "slash_commands": [
+            {
+                "command": "/linklastfm",
+                "description": "Link your last.fm account.",
+                "should_escape": false
+            },
+            {
+                "command": "/nowplaying",
+                "description": "Shows the currently playing/last played song of the selected user, defaults to you..",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/profile",
+                "description": "Displays a users last.fm profile",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/roast",
+                "description": "Roasts the users music taste, user defaults to you.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/uptime",
+                "description": "View the bots uptime.",
+                "should_escape": false
+            },
+            {
+                "command": "/unlinklastfm",
+                "description": "Unlinks your last.fm account from your slack account.",
+                "should_escape": false
+            },
+            {
+                "command": "/album",
+                "description": "View the album info of the last played album of the user, defaults to you.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/getsong",
+                "description": "View song info. Defaults to you or song name if both are provided.",
+                "usage_hint": "<song name/user>",
+                "should_escape": true
+            },
+            {
+                "command": "/artist",
+                "description": "Gets the info of the latest played/currently playing artist, defaults to you.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/cover",
+                "description": "Shows the album cover of the last played album, defaults to you.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/recent",
+                "description": "Shows the users recently played songs.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/plays",
+                "description": "Shows the scrobble count of the user.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/about",
+                "description": "Info about the bot.",
+                "should_escape": false
+            },
+            {
+                "command": "/topartists",
+                "description": "Shows the top artists for the user.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/topalbums",
+                "description": "Shows the top albums for the user.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/toptracks",
+                "description": "Shows the top tracks for the user.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/compliment",
+                "description": "Opposite of roast, compliments your music taste.",
+                "usage_hint": "user",
+                "should_escape": true
+            },
+            {
+                "command": "/whoknows",
+                "description": "Lists the top 10 people who listen to an artist.",
+                "usage_hint": "artist",
+                "should_escape": true
+            },
+            {
+                "command": "/whoslistening",
+                "description": "Shows 5 random people who are currently listening to something in the workspace.",
+                "should_escape": true
+            },
+            {
+                "command": "/whoknowsalbum",
+                "description": "Lists the top 10 people who've listened to a album.",
+                "usage_hint": "<album name>",
+                "should_escape": true
+            },
+            {
+                "command": "/whoknowssong",
+                "description": "Lists the top 10 people who listen to a song.",
+                "usage_hint": "<song>",
+                "should_escape": true
+            },
+            {
+                "command": "/slackfmcommands",
+                "description": "Lists basic commands + link to commands.md",
+                "should_escape": false
+            },
+            {
+                "command": "/linkedcount",
+                "description": "Displays the amount of linked users in the workspace.",
+                "should_escape": false
+            },
+            {
+                "command": "/crownboard",
+                "description": "Shows the top 10 crown holders for /whoknows",
+                "should_escape": true
+            }
+        ]
     },
-    "slash_commands": [
-      {
-        "command": "/linklastfm",
-        "description": "Link your last.fm account.",
-        "should_escape": false
-      },
-      {
-        "command": "/nowplaying",
-        "description": "Shows the currently playing/last played song of the selected user, defaults to you..",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/profile",
-        "description": "Displays a users last.fm profile",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/roast",
-        "description": "Roasts the users music taste, user defaults to you.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/uptime",
-        "description": "View the bots uptime.",
-        "should_escape": false
-      },
-      {
-        "command": "/unlinklastfm",
-        "description": "Unlinks your last.fm account from your slack account.",
-        "should_escape": false
-      },
-      {
-        "command": "/album",
-        "description": "View the album info of the last played album of the user, defaults to you.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/getsong",
-        "description": "View song info. Defaults to you or song name if both are provided.",
-        "usage_hint": "<song name/user>",
-        "should_escape": true
-      },
-      {
-        "command": "/artist",
-        "description": "Gets the info of the latest played/currently playing artist, defaults to you.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/cover",
-        "description": "Shows the album cover of the last played album, defaults to you.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/recent",
-        "description": "Shows the users recently played songs.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/plays",
-        "description": "Shows the scrobble count of the user.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/about",
-        "description": "Info about the bot.",
-        "should_escape": false
-      },
-      {
-        "command": "/topartists",
-        "description": "Shows the top artists for the user.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/topalbums",
-        "description": "Shows the top albums for the user.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/toptracks",
-        "description": "Shows the top tracks for the user.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/compliment",
-        "description": "Opposite of roast, compliments your music taste.",
-        "usage_hint": "user",
-        "should_escape": true
-      },
-      {
-        "command": "/whoknows",
-        "description": "Lists the top 10 people who listen to an artist.",
-        "usage_hint": "artist",
-        "should_escape": true
-      },
-      {
-        "command": "/whoslistening",
-        "description": "Shows 5 random people who are currently listening to something in the workspace.",
-        "should_escape": true
-      },
-      {
-        "command": "/whoknowsalbum",
-        "description": "Lists the top 10 people who've listened to a album.",
-        "usage_hint": "<album name>",
-        "should_escape": true
-      },
-      {
-        "command": "/whoknowssong",
-        "description": "Lists the top 10 people who listen to a song.",
-        "usage_hint": "<song>",
-        "should_escape": true
-      },
-      {
-        "command": "/slackfmcommands",
-        "description": "Lists basic commands + link to commands.md",
-        "should_escape": false
-      },
-      {
-        "command": "/linkedcount",
-        "description": "Displays the amount of linked users in the workspace.",
-        "should_escape": false
-      },
-      {
-        "command": "/crownboard",
-        "description": "Shows the top 10 crown holders for /whoknows",
-        "should_escape": true
-      }
-    ]
-  },
-  "oauth_config": {
-    "redirect_urls": ["https://bnajns.hackclub.app/slack/callback"],
-    "scopes": {
-      "bot": ["chat:write", "commands", "im:write", "users:read"]
+    "oauth_config": {
+        "redirect_urls": [
+            "https://bnajns.hackclub.app/slack/callback"
+        ],
+        "scopes": {
+            "bot": [
+                "chat:write",
+                "commands",
+                "im:write",
+                "users:read"
+            ]
+        }
+    },
+    "settings": {
+        "event_subscriptions": {
+            "bot_events": [
+                "app_home_opened"
+            ]
+        },
+        "interactivity": {
+            "is_enabled": true
+        },
+        "org_deploy_enabled": false,
+        "socket_mode_enabled": true,
+        "token_rotation_enabled": false
     }
-  },
-  "settings": {
-    "event_subscriptions": {
-      "bot_events": ["app_home_opened"]
-    },
-    "interactivity": {
-      "is_enabled": true
-    },
-    "org_deploy_enabled": false,
-    "socket_mode_enabled": true,
-    "token_rotation_enabled": false
-  }
 }
