@@ -267,7 +267,7 @@ export default function (app) {
                 type: 'section',
                 text: {
                   type: 'mrkdwn',
-                  text: `*${i + 1}. ${user.displayName}* — ${user.userplaycount} plays (since ${new Date(crownRow.earned_at * 1000).toLocaleDateString()})`,
+                  text: `*${i + 1}. ${user.displayName}* — ${user.userplaycount} plays (Leader since ${new Date(crownRow.earned_at * 1000).toLocaleDateString()})`,
                 },
               });
               continue;
