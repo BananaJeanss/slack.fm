@@ -6,11 +6,13 @@ import fs from 'fs';
 import path from 'path';
 import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
+import axios from 'axios';
+import { fileURLToPath, pathToFileURL } from 'url';
+
+// local imports
 import { respondWithFooter } from './utils/responsefooter.js';
 import { validateEnv } from './utils/validateenv.js';
-import axios from 'axios';
 import { filterPayload } from './utils/languageFilter/languageFilter.js';
-import { fileURLToPath, pathToFileURL } from 'url';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -123,7 +125,7 @@ const loadCommands = async (dir) => {
       await loadCommands(fullPath);
     } else if (file.endsWith('.js')) {
       try {
-        const moduleUrl = pathToFileURL(fullPath).href; // ✅ convert path to file:// URL
+        const moduleUrl = pathToFileURL(fullPath).href;
         const commandModule = await import(moduleUrl);
         if (typeof commandModule.default === 'function') {
           commandModule.default(app);
@@ -143,9 +145,17 @@ const viewsPath = path.join(__dirname, 'routes', 'views');
 expressApp.use('/lastfm', express.static(viewsPath));
 expressApp.use('/lastfm', (await import('./routes/lastfm.js')).default);
 
+// health check
+expressApp.use('/health', (req, res) => {
+  res.status(200);
+  res.json({ status: 'ok', timestamp: Date.now(), uptime: process.uptime() });
+});
+
 // Start the Express server
 const PORT = process.env.PORT || 3000;
-expressApp.listen(PORT, '0.0.0.0', () => console.log(`🌐 Express up on port ${PORT}`));
+expressApp.listen(PORT, '0.0.0.0', () =>
+  console.log(`🌐 Express up on port ${PORT}`)
+);
 
 // DB Cleanup
 await import('./utils/dbcleanup.js');
