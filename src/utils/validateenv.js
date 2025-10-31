@@ -35,9 +35,7 @@ export function validateEnv() {
 
   if (!process.env.APICALL_DELAY) {
     process.env.APICALL_DELAY = '25';
-    console.warn(
-      "⚠️ APICALL_DELAY not set in env, defaulting to '25'"
-    );
+    console.warn("⚠️ APICALL_DELAY not set in env, defaulting to '25'");
   }
 
   // validate formats

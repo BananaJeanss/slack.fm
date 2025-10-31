@@ -154,7 +154,7 @@ export default function (app) {
         const delay = (ms) => new Promise((r) => setTimeout(r, ms));
         const playcounts = await Promise.all(
           rows.map(async (row, index) => {
-            await delay(index * API_CALL_DELAY);  // .env APICALL_DELAY wait between each request
+            await delay(index * API_CALL_DELAY); // .env APICALL_DELAY wait between each request
             try {
               const res = await axios.get(
                 `https://ws.audioscrobbler.com/2.0/?method=album.getInfo&artist=${encodeURIComponent(

@@ -109,7 +109,7 @@ export default function (app) {
         // Fetch playcount for each user
         const playcounts = await Promise.all(
           rows.map(async (row, index) => {
-            await delay(index * API_CALL_DELAY);  // .env APICALL_DELAY wait between each request
+            await delay(index * API_CALL_DELAY); // .env APICALL_DELAY wait between each request
             try {
               const res = await axios.get(
                 `https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${encodeURIComponent(
@@ -262,7 +262,8 @@ export default function (app) {
             user.slack_user_id === crownRow.slack_user_id
           ) {
             // add since date for crown leader
-            if (newLeaderType === 'none') { // only if not changed
+            if (newLeaderType === 'none') {
+              // only if not changed
               blocks.push({
                 type: 'section',
                 text: {
