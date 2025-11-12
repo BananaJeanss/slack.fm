@@ -71,6 +71,7 @@ To self-host slack.fm, follow these steps:
 - `SPOTIFY_CLIENT_SECRET` – Your Spotify client secret
 - `USE_LANGUAGE_FILTERING` – `true` or `false` to enable/disable language filtering for output
 - `DB_PATH` – Path to the SQLite database file (default: `./utils/slackfm.db`)
+- `AIHACKCLUB_API_KEY` - (optional for AI roast/compliments) Your <https://ai.hackclub.com/> API key
 
 ## Usage
 

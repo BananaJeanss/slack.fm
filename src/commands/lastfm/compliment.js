@@ -1,6 +1,7 @@
 import axios from 'axios';
 import db from '../../utils/db.js';
 import notLinkedMessage from '#utils/notLinkedMessage.js';
+import { callAiHackClub } from '#utils/callAi.js';
 
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
@@ -106,14 +107,7 @@ Deliver a heartwarming, sincere celebration of their music taste. Be poetic, kin
 `;
 
               // Step 5: Send to ai.hackclub.com
-              const aiResponse = await axios.post(
-                'https://ai.hackclub.com/chat/completions',
-                {
-                  messages: [{ role: 'user', content: prompt }],
-                }
-              );
-
-              let compliment = aiResponse.data.choices?.[0]?.message?.content;
+              let compliment = await callAiHackClub(prompt);
 
               // remove <think> tags if present
               if (compliment) {

@@ -38,6 +38,12 @@ export function validateEnv() {
     console.warn("⚠️ APICALL_DELAY not set in env, defaulting to '25'");
   }
 
+  if (!process.env.AIHACKCLUB_API_KEY) {
+    console.warn(
+      '⚠️ AIHACKCLUB_API_KEY not set in env, AI roast/compliment will not work'
+    );
+  }
+
   // validate formats
   const validations = [
     {
