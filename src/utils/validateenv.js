@@ -44,6 +44,18 @@ export function validateEnv() {
     );
   }
 
+  if (!process.env.AI_MODEL_NAME) {
+    process.env.AI_MODEL_NAME = 'qwen/qwen3-32b';
+    console.warn(
+      "⚠️ AI_MODEL_NAME not set in env, defaulting to 'qwen/qwen3-32b'"
+    );
+  }
+
+  if (!process.env.AI_TEMPERATURE) {
+    process.env.AI_TEMPERATURE = '1.5';
+    console.warn("⚠️ AI_TEMPERATURE not set in env, defaulting to '1.5'");
+  }
+
   // validate formats
   const validations = [
     {

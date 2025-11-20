@@ -72,6 +72,7 @@ To self-host slack.fm, follow these steps:
 - `USE_LANGUAGE_FILTERING` – `true` or `false` to enable/disable language filtering for output
 - `DB_PATH` – Path to the SQLite database file (default: `./utils/slackfm.db`)
 - `AIHACKCLUB_API_KEY` - (optional for AI roast/compliments) Your <https://ai.hackclub.com/> API key
+- `AI_MODEL_NAME` - The model to use for roast/compliment commands (default: `qwen/qwen3-32b`)
 
 ## Usage
 

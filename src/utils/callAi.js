@@ -6,9 +6,13 @@ export async function callAiHackClub(prompt) {
   if (!apiKey) {
     throw new Error('AIHACKCLUB_API_KEY is not set in environment variables!');
   }
+  console.log(`Using AI model: ${process.env.AI_MODEL_NAME || 'qwen/qwen3-32b'}`);
   const response = await axios.post(
     'https://ai.hackclub.com/proxy/v1/chat/completions',
     {
+      model: process.env.AI_MODEL_NAME || 'qwen/qwen3-32b',
+      stream: false,
+      temperature: process.env.AI_TEMPERATURE ? parseFloat(process.env.AI_TEMPERATURE) : 1.5,
       messages: [{ role: 'user', content: prompt }],
     },
     {
@@ -16,6 +20,7 @@ export async function callAiHackClub(prompt) {
         'Content-Type': 'application/json',
         Authorization: `Bearer ${apiKey}`,
       },
+      timeout: 30000,
     }
   );
   if (!response.data || !response.data.choices || response.data.choices.length === 0) {
