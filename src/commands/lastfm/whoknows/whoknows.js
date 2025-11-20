@@ -3,7 +3,6 @@ import db from '#utils/db.js';
 import getDisplayName from '#utils/getDisplayName.js';
 import { resolveArtistImage, getPlaceholderImage } from '#utils/getImage.js';
 import notLinkedMessage from '#utils/notLinkedMessage.js';
-import { API_CALL_DELAY } from '#utils/apicalldelay.js';
 
 const LASTFM_API_KEY = process.env.LASTFM_API_KEY;
 
@@ -109,7 +108,7 @@ export default function (app) {
         // Fetch playcount for each user
         const playcounts = await Promise.all(
           rows.map(async (row, index) => {
-            await delay(index * API_CALL_DELAY); // .env APICALL_DELAY wait between each request
+            await delay(index * process.env.APICALL_DELAY);
             try {
               const res = await axios.get(
                 `https://ws.audioscrobbler.com/2.0/?method=artist.getInfo&artist=${encodeURIComponent(
