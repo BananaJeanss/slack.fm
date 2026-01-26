@@ -23,7 +23,7 @@
   "license": "MIT",
   "dependencies": {
     "@slack/bolt": "^4.6.0",
-    "axios": "^1.13.2",
+    "axios": "^1.13.3",
     "bad-words": "^4.0.0",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
@@ -35,6 +35,6 @@
   "devDependencies": {
     "eslint": "^9.39.2",
     "eslint-config-prettier": "^10.1.8",
-    "prettier": "^3.7.4"
+    "prettier": "^3.8.1"
   }
 }
